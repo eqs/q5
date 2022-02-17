@@ -1,0 +1,14 @@
+[package]
+name = "q5"
+version = "0.0.1"
+edition = "2021"
+resolver = "2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "q5"
+crate-type = ["cdylib"]
+
+[dependencies]
+nannou = "0.18.1"
+pyo3 = { version = "0.15.1", features = ["extension-module"] }
