@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup, find_namespace_packages
+from setuptools import setup, find_packages
 from setuptools_rust import Binding, RustExtension
 
 
 setup(
     name='q5',
     version='0.0.1',
-    packages=find_namespace_packages(include=['q5.*']),
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
+    packages=find_packages(),
     zip_safe=False,
+    include_package_data=True,
     rust_extensions=[
         RustExtension(
             'q5.engine',
