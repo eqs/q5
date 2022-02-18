@@ -136,6 +136,16 @@ fn rect(x: f64, y: f64, w: f64, h: f64) {
         .stroke_style();
 }
 
+#[pyfunction]
+fn line(x1: f64, y1: f64, x2: f64, y2: f64) {
+    let draw = get_draw();
+    let p1 = vec2(x1 as f32, y1 as f32);
+    let p2 = vec2(x2 as f32, y2 as f32);
+    draw.line()
+        .points(p1, p2)
+        .path_style();
+}
+
 #[pymodule]
 fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
@@ -154,5 +164,6 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(ellipse, m)?)?;
     m.add_function(wrap_pyfunction!(circle, m)?)?;
     m.add_function(wrap_pyfunction!(rect, m)?)?;
+    m.add_function(wrap_pyfunction!(line, m)?)?;
     Ok(())
 }

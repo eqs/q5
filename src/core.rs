@@ -173,6 +173,10 @@ pub trait ShapeStyle {
     fn stroke_style(self) -> Self;
 }
 
+pub trait PathStyle {
+    fn path_style(self) -> Self;
+}
+
 impl<'a, T> ShapeStyle for Drawing<'a, T>
     where T: SetPolygon + SetStroke + SetColor<ColorScalar> + Into<Primitive>,
           Primitive: Into<Option<T>> {
@@ -202,6 +206,30 @@ impl<'a, T> ShapeStyle for Drawing<'a, T>
             PColor::NoColor => self,
             _ => {
                 self.stroke_color(PLUM)
+                    .stroke_weight(state.drawing_style.stroke_weight)
+            },
+        }
+    }
+}
+
+impl<'a, T> PathStyle for Drawing<'a, T>
+    where T: SetStroke + SetColor<f32> + Into<Primitive>,
+          Primitive: Into<Option<T>> {
+
+    fn path_style(self) -> Self {
+        let state = instance();
+        match state.drawing_style.stroke_color {
+            PColor::Gray8(lum) => {
+                self.rgb8(lum, lum, lum)
+                    .stroke_weight(state.drawing_style.stroke_weight)
+            },
+            PColor::Rgb8(r, g, b) => {
+                self.rgb8(r, g, b)
+                    .stroke_weight(state.drawing_style.stroke_weight)
+            },
+            PColor::NoColor => self,
+            _ => {
+                self.color(PLUM)
                     .stroke_weight(state.drawing_style.stroke_weight)
             },
         }
