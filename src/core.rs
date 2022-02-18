@@ -168,16 +168,13 @@ pub enum PColor {
     NoColor,
 }
 
-pub trait FillStyle {
+pub trait ShapeStyle {
     fn fill_style(self) -> Self;
-}
-
-pub trait StrokeStyle {
     fn stroke_style(self) -> Self;
 }
 
-impl<'a, T> FillStyle for Drawing<'a, T>
-    where T: SetPolygon + SetColor<ColorScalar> + Into<Primitive>,
+impl<'a, T> ShapeStyle for Drawing<'a, T>
+    where T: SetPolygon + SetStroke + SetColor<ColorScalar> + Into<Primitive>,
           Primitive: Into<Option<T>> {
     fn fill_style(self) -> Self {
         let state = instance();
@@ -190,11 +187,7 @@ impl<'a, T> FillStyle for Drawing<'a, T>
             },
         }
     }
-}
 
-impl<'a, T> StrokeStyle for Drawing<'a, T>
-    where T: SetPolygon + SetStroke + Into<Primitive>,
-          Primitive: Into<Option<T>> {
     fn stroke_style(self) -> Self {
         let state = instance();
         match state.drawing_style.stroke_color {
