@@ -1,5 +1,6 @@
 use nannou::prelude::*;
 use pyo3::prelude::*;
+use pyo3::types::PyList;
 use pyo3::exceptions::PyAttributeError;
 
 mod core;
@@ -146,6 +147,21 @@ fn line(x1: f64, y1: f64, x2: f64, y2: f64) {
         .path_style();
 }
 
+#[pyfunction]
+fn polygon(points: &PyList) {
+    let points = points.extract::<Vec<(f64, f64)>>().unwrap();
+    let draw = get_draw();
+
+    let points = points.iter().map(|p| {
+        (p.0 as f32, p.1 as f32)
+    });
+
+    draw.polygon()
+        .fill_style()
+        .stroke_style()
+        .points(points);
+}
+
 #[pymodule]
 fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
@@ -165,5 +181,6 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(circle, m)?)?;
     m.add_function(wrap_pyfunction!(rect, m)?)?;
     m.add_function(wrap_pyfunction!(line, m)?)?;
+    m.add_function(wrap_pyfunction!(polygon, m)?)?;
     Ok(())
 }
