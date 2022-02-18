@@ -126,6 +126,16 @@ fn circle(x: f64, y: f64, r: f64) {
     ellipse(x, y, r, r);
 }
 
+#[pyfunction]
+fn rect(x: f64, y: f64, w: f64, h: f64) {
+    let draw = get_draw();
+    draw.rect()
+        .x_y(x as f32, y as f32)
+        .w_h(w as f32, h as f32)
+        .fill_style()
+        .stroke_style();
+}
+
 #[pymodule]
 fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
@@ -143,5 +153,6 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(background, m)?)?;
     m.add_function(wrap_pyfunction!(ellipse, m)?)?;
     m.add_function(wrap_pyfunction!(circle, m)?)?;
+    m.add_function(wrap_pyfunction!(rect, m)?)?;
     Ok(())
 }
