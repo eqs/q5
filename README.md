@@ -1,5 +1,12 @@
 # q5
 
+## Installation
+
+```
+pip install setuptools-rust
+pip install q5
+```
+
 ## Development
 
 ```
