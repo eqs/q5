@@ -7,6 +7,7 @@ use nannou::prelude::*;
 use nannou::draw::properties::*;
 use nannou::draw::primitive::*;
 use nannou::draw::primitive::polygon::*;
+use nannou::color::*;
 
 static mut INSTANCE: *mut AppState = 0 as *mut AppState;
 static mut APP_INSTANCE: *mut App = 0 as *mut App;
@@ -106,16 +107,16 @@ impl<'a> AppState<'a> {
         };
     }
 
-    pub fn fill(&mut self, r: u8, g: u8, b: u8) {
-        self.drawing_style.fill_color = PColor::Rgb8(r, g, b);
+    pub fn fill(&mut self, color: PColor) {
+        self.drawing_style.fill_color = color;
     }
 
     pub fn no_fill(&mut self) {
         self.drawing_style.fill_color = PColor::NoColor;
     }
 
-    pub fn stroke(&mut self, r: u8, g: u8, b: u8) {
-        self.drawing_style.stroke_color = PColor::Rgb8(r, g, b);
+    pub fn stroke(&mut self, color: PColor) {
+        self.drawing_style.stroke_color = color;
     }
 
     pub fn no_stroke(&mut self) {
@@ -163,13 +164,22 @@ impl DrawingStyle {
 }
 
 pub enum PColor {
-    Gray(f32),
     Gray8(u8),
-    Rgb(f32, f32, f32),
-    Rgba(f32, f32, f32, f32),
     Rgb8(u8, u8, u8),
     Rgba8(u8, u8, u8, u8),
     NoColor,
+}
+
+impl PColor {
+    pub fn create_color(r: u8, x: Option<u8>, y: Option<u8>, z: Option<u8>) -> Self {
+        match (x, y, z) {
+            (None, None, None) => PColor::Gray8(r),
+            (Some(a), None, None) => PColor::Rgba8(r, r, r, a),
+            (Some(g), Some(b), None) => PColor::Rgb8(r, g, b),
+            (Some(g), Some(b), Some(a)) => PColor::Rgba8(r, g, b, a),
+            _ => panic!("Invalid color")
+        }
+    }
 }
 
 pub trait ShapeStyle {
@@ -189,10 +199,8 @@ impl<'a, T> ShapeStyle for Drawing<'a, T>
         match state.drawing_style.fill_color {
             PColor::Gray8(lum) => self.color(rgb8(lum, lum, lum)),
             PColor::Rgb8(r, g, b) => self.color(rgb8(r, g, b)),
+            PColor::Rgba8(r, g, b, a) => self.color(rgba8(r, g, b, a)),
             PColor::NoColor => self.no_fill(),
-            _ => {
-                self.color(PLUM)
-            },
         }
     }
 
@@ -207,11 +215,11 @@ impl<'a, T> ShapeStyle for Drawing<'a, T>
                 self.stroke_color(rgb8(r, g, b))
                     .stroke_weight(state.drawing_style.stroke_weight)
             },
-            PColor::NoColor => self,
-            _ => {
-                self.stroke_color(PLUM)
+            PColor::Rgba8(r, g, b, a) => {
+                self.stroke_color(rgba8(r, g, b, a))
                     .stroke_weight(state.drawing_style.stroke_weight)
             },
+            PColor::NoColor => self,
         }
     }
 }
@@ -231,11 +239,11 @@ impl<'a, T> PathStyle for Drawing<'a, T>
                 self.rgb8(r, g, b)
                     .stroke_weight(state.drawing_style.stroke_weight)
             },
-            PColor::NoColor => self,
-            _ => {
-                self.color(PLUM)
+            PColor::Rgba8(r, g, b, a) => {
+                self.rgba8(r, g, b, a)
                     .stroke_weight(state.drawing_style.stroke_weight)
             },
+            PColor::NoColor => self,
         }
     }
 }
