@@ -3,8 +3,8 @@ use pyo3::prelude::*;
 use pyo3::types::PyList;
 use pyo3::exceptions::PyAttributeError;
 
-mod core;
-use crate::core::*;
+mod system;
+use crate::system::*;
 
 struct Model {
     _window: window::Id,
