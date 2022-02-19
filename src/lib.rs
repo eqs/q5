@@ -113,35 +113,35 @@ fn background(r: u8, g: u8, b: u8) {
 }
 
 #[pyfunction]
-fn ellipse(x: f64, y: f64, w: f64, h: f64) {
+fn ellipse(x: f32, y: f32, w: f32, h: f32) {
     let draw = get_draw();
     draw.ellipse()
-        .x_y(x as f32, y as f32)
-        .w_h(w as f32, h as f32)
+        .x_y(x, y)
+        .w_h(w, h)
         .fill_style()
         .stroke_style();
 }
 
 #[pyfunction]
-fn circle(x: f64, y: f64, r: f64) {
+fn circle(x: f32, y: f32, r: f32) {
     ellipse(x, y, r, r);
 }
 
 #[pyfunction]
-fn rect(x: f64, y: f64, w: f64, h: f64) {
+fn rect(x: f32, y: f32, w: f32, h: f32) {
     let draw = get_draw();
     draw.rect()
-        .x_y(x as f32, y as f32)
-        .w_h(w as f32, h as f32)
+        .x_y(x, y)
+        .w_h(w, h)
         .fill_style()
         .stroke_style();
 }
 
 #[pyfunction]
-fn line(x1: f64, y1: f64, x2: f64, y2: f64) {
+fn line(x1: f32, y1: f32, x2: f32, y2: f32) {
     let draw = get_draw();
-    let p1 = vec2(x1 as f32, y1 as f32);
-    let p2 = vec2(x2 as f32, y2 as f32);
+    let p1 = vec2(x1, y1);
+    let p2 = vec2(x2, y2);
     draw.line()
         .points(p1, p2)
         .path_style();
@@ -149,12 +149,12 @@ fn line(x1: f64, y1: f64, x2: f64, y2: f64) {
 
 #[pyfunction]
 fn arrow(
-    x1: f64, y1: f64, x2: f64, y2: f64,
+    x1: f32, y1: f32, x2: f32, y2: f32,
         head_length: Option<f32>, head_width: Option<f32>
     ) {
     let draw = get_draw();
-    let p1 = vec2(x1 as f32, y1 as f32);
-    let p2 = vec2(x2 as f32, y2 as f32);
+    let p1 = vec2(x1, y1);
+    let p2 = vec2(x2, y2);
 
     let head_length = head_length.unwrap_or(
         instance().get_stroke_weight() * 4.0
@@ -172,17 +172,14 @@ fn arrow(
 
 #[pyfunction]
 fn polygon(points: &PyList) {
-    let points = points.extract::<Vec<(f64, f64)>>().unwrap();
+    let points = points.extract::<Vec<(f32, f32)>>().unwrap();
     let draw = get_draw();
-
-    let points = points.iter().map(|p| {
-        (p.0 as f32, p.1 as f32)
-    });
-
     draw.polygon()
         .fill_style()
         .stroke_style()
-        .points(points);
+        .points(points.iter().map(|p| {
+            (p.0, p.1)
+        }));
 }
 
 #[pymodule]
