@@ -7,6 +7,7 @@ use nannou::prelude::*;
 use nannou::draw::properties::*;
 use nannou::draw::primitive::*;
 use nannou::draw::primitive::polygon::*;
+use nannou::color::*;
 
 static mut INSTANCE: *mut AppState = 0 as *mut AppState;
 static mut APP_INSTANCE: *mut App = 0 as *mut App;
@@ -62,24 +63,35 @@ pub fn get_draw() -> Draw {
 }
 
 pub trait PythonCallback {
+    fn setup(&mut self);
     fn update(&mut self);
     fn draw(&mut self);
 }
 
 pub struct AppState<'a> {
     pub py: Python<'a>,
+    pub py_setup: &'a PyAny,
     pub py_update: &'a PyAny,
     pub py_draw: &'a PyAny,
+    pub width: u32,
+    pub height: u32,
+    pub title: &'a str,
     drawing_style: DrawingStyle,
     transform_matrix: Mat4,
     matrix_stack: Vec<Mat4>,
 }
 
 impl<'a> AppState<'a> {
-    pub fn new(py: Python<'a>, py_update: &'a PyAny, py_draw: &'a PyAny) -> Self {
+    pub fn new(
+        py: Python<'a>,
+        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny
+    ) -> Self {
         let matrix_stack = Vec::new();
         Self {
-            py, py_update, py_draw,
+            py, py_setup, py_update, py_draw,
+            width: 800,
+            height: 800,
+            title: "q5",
             drawing_style: DrawingStyle::new(),
             transform_matrix: Mat4::IDENTITY,
             matrix_stack,
@@ -106,16 +118,16 @@ impl<'a> AppState<'a> {
         };
     }
 
-    pub fn fill(&mut self, r: u8, g: u8, b: u8) {
-        self.drawing_style.fill_color = PColor::Rgb8(r, g, b);
+    pub fn fill(&mut self, color: PColor) {
+        self.drawing_style.fill_color = color;
     }
 
     pub fn no_fill(&mut self) {
         self.drawing_style.fill_color = PColor::NoColor;
     }
 
-    pub fn stroke(&mut self, r: u8, g: u8, b: u8) {
-        self.drawing_style.stroke_color = PColor::Rgb8(r, g, b);
+    pub fn stroke(&mut self, color: PColor) {
+        self.drawing_style.stroke_color = color;
     }
 
     pub fn no_stroke(&mut self) {
@@ -125,9 +137,19 @@ impl<'a> AppState<'a> {
     pub fn stroke_weight(&mut self, w: f32) {
         self.drawing_style.stroke_weight = w;
     }
+
+    pub fn get_stroke_weight(&self) -> f32 {
+        self.drawing_style.stroke_weight
+    }
 }
 
 impl<'a> PythonCallback for AppState<'a> {
+    fn setup(&mut self) {
+        if let Err(err) = self.py_setup.call0() {
+            err.print(self.py);
+        }
+    }
+
     fn update(&mut self) {
         if let Err(err) = self.py_update.call0() {
             err.print(self.py);
@@ -159,42 +181,46 @@ impl DrawingStyle {
 }
 
 pub enum PColor {
-    Gray(f32),
     Gray8(u8),
-    Rgb(f32, f32, f32),
-    Rgba(f32, f32, f32, f32),
     Rgb8(u8, u8, u8),
     Rgba8(u8, u8, u8, u8),
     NoColor,
 }
 
-pub trait FillStyle {
-    fn fill_style(self) -> Self;
+impl PColor {
+    pub fn create_color(r: u8, x: Option<u8>, y: Option<u8>, z: Option<u8>) -> Self {
+        match (x, y, z) {
+            (None, None, None) => PColor::Gray8(r),
+            (Some(a), None, None) => PColor::Rgba8(r, r, r, a),
+            (Some(g), Some(b), None) => PColor::Rgb8(r, g, b),
+            (Some(g), Some(b), Some(a)) => PColor::Rgba8(r, g, b, a),
+            _ => panic!("Invalid color")
+        }
+    }
 }
 
-pub trait StrokeStyle {
+pub trait ShapeStyle {
+    fn fill_style(self) -> Self;
     fn stroke_style(self) -> Self;
 }
 
-impl<'a, T> FillStyle for Drawing<'a, T>
-    where T: SetPolygon + SetColor<ColorScalar> + Into<Primitive>,
+pub trait PathStyle {
+    fn path_style(self) -> Self;
+}
+
+impl<'a, T> ShapeStyle for Drawing<'a, T>
+    where T: SetPolygon + SetStroke + SetColor<ColorScalar> + Into<Primitive>,
           Primitive: Into<Option<T>> {
     fn fill_style(self) -> Self {
         let state = instance();
         match state.drawing_style.fill_color {
             PColor::Gray8(lum) => self.color(rgb8(lum, lum, lum)),
             PColor::Rgb8(r, g, b) => self.color(rgb8(r, g, b)),
+            PColor::Rgba8(r, g, b, a) => self.color(rgba8(r, g, b, a)),
             PColor::NoColor => self.no_fill(),
-            _ => {
-                self.color(PLUM)
-            },
         }
     }
-}
 
-impl<'a, T> StrokeStyle for Drawing<'a, T>
-    where T: SetPolygon + SetStroke + Into<Primitive>,
-          Primitive: Into<Option<T>> {
     fn stroke_style(self) -> Self {
         let state = instance();
         match state.drawing_style.stroke_color {
@@ -206,11 +232,35 @@ impl<'a, T> StrokeStyle for Drawing<'a, T>
                 self.stroke_color(rgb8(r, g, b))
                     .stroke_weight(state.drawing_style.stroke_weight)
             },
-            PColor::NoColor => self,
-            _ => {
-                self.stroke_color(PLUM)
+            PColor::Rgba8(r, g, b, a) => {
+                self.stroke_color(rgba8(r, g, b, a))
                     .stroke_weight(state.drawing_style.stroke_weight)
             },
+            PColor::NoColor => self,
+        }
+    }
+}
+
+impl<'a, T> PathStyle for Drawing<'a, T>
+    where T: SetStroke + SetColor<f32> + Into<Primitive>,
+          Primitive: Into<Option<T>> {
+
+    fn path_style(self) -> Self {
+        let state = instance();
+        match state.drawing_style.stroke_color {
+            PColor::Gray8(lum) => {
+                self.rgb8(lum, lum, lum)
+                    .stroke_weight(state.drawing_style.stroke_weight)
+            },
+            PColor::Rgb8(r, g, b) => {
+                self.rgb8(r, g, b)
+                    .stroke_weight(state.drawing_style.stroke_weight)
+            },
+            PColor::Rgba8(r, g, b, a) => {
+                self.rgba8(r, g, b, a)
+                    .stroke_weight(state.drawing_style.stroke_weight)
+            },
+            PColor::NoColor => self,
         }
     }
 }
