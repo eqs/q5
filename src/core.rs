@@ -63,24 +63,35 @@ pub fn get_draw() -> Draw {
 }
 
 pub trait PythonCallback {
+    fn setup(&mut self);
     fn update(&mut self);
     fn draw(&mut self);
 }
 
 pub struct AppState<'a> {
     pub py: Python<'a>,
+    pub py_setup: &'a PyAny,
     pub py_update: &'a PyAny,
     pub py_draw: &'a PyAny,
+    pub width: u32,
+    pub height: u32,
+    pub title: &'a str,
     drawing_style: DrawingStyle,
     transform_matrix: Mat4,
     matrix_stack: Vec<Mat4>,
 }
 
 impl<'a> AppState<'a> {
-    pub fn new(py: Python<'a>, py_update: &'a PyAny, py_draw: &'a PyAny) -> Self {
+    pub fn new(
+        py: Python<'a>,
+        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny
+    ) -> Self {
         let matrix_stack = Vec::new();
         Self {
-            py, py_update, py_draw,
+            py, py_setup, py_update, py_draw,
+            width: 800,
+            height: 800,
+            title: "q5",
             drawing_style: DrawingStyle::new(),
             transform_matrix: Mat4::IDENTITY,
             matrix_stack,
@@ -133,6 +144,12 @@ impl<'a> AppState<'a> {
 }
 
 impl<'a> PythonCallback for AppState<'a> {
+    fn setup(&mut self) {
+        if let Err(err) = self.py_setup.call0() {
+            err.print(self.py);
+        }
+    }
+
     fn update(&mut self) {
         if let Err(err) = self.py_update.call0() {
             err.print(self.py);
