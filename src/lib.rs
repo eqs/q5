@@ -44,6 +44,8 @@ fn view(app: &App, _model: &Model, frame: Frame) {
 fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     let value = match name {
         "frame_count" => get_app().elapsed_frames().to_object(py),
+        "width" => get_app().window_rect().w().to_object(py),
+        "height" => get_app().window_rect().h().to_object(py),
         _ => {
             return Err(PyAttributeError::new_err(format!(
                 "module 'q5' has no attribute '{}'", name
