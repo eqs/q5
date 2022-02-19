@@ -125,6 +125,10 @@ impl<'a> AppState<'a> {
     pub fn stroke_weight(&mut self, w: f32) {
         self.drawing_style.stroke_weight = w;
     }
+
+    pub fn get_stroke_weight(&self) -> f32 {
+        self.drawing_style.stroke_weight
+    }
 }
 
 impl<'a> PythonCallback for AppState<'a> {

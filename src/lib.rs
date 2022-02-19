@@ -148,6 +148,29 @@ fn line(x1: f64, y1: f64, x2: f64, y2: f64) {
 }
 
 #[pyfunction]
+fn arrow(
+    x1: f64, y1: f64, x2: f64, y2: f64,
+        head_length: Option<f32>, head_width: Option<f32>
+    ) {
+    let draw = get_draw();
+    let p1 = vec2(x1 as f32, y1 as f32);
+    let p2 = vec2(x2 as f32, y2 as f32);
+
+    let head_length = head_length.unwrap_or(
+        instance().get_stroke_weight() * 4.0
+    );
+    let head_width = head_width.unwrap_or(
+        instance().get_stroke_weight() * 2.0
+    );
+
+    draw.arrow()
+        .points(p1, p2)
+        .head_length(head_length)
+        .head_width(head_width)
+        .path_style();
+}
+
+#[pyfunction]
 fn polygon(points: &PyList) {
     let points = points.extract::<Vec<(f64, f64)>>().unwrap();
     let draw = get_draw();
@@ -181,6 +204,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(circle, m)?)?;
     m.add_function(wrap_pyfunction!(rect, m)?)?;
     m.add_function(wrap_pyfunction!(line, m)?)?;
+    m.add_function(wrap_pyfunction!(arrow, m)?)?;
     m.add_function(wrap_pyfunction!(polygon, m)?)?;
     Ok(())
 }
