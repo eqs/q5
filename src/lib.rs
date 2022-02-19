@@ -82,8 +82,8 @@ fn pop_matrix() {
 }
 
 #[pyfunction]
-fn fill(r: u8, g: u8, b: u8) {
-    instance().fill(r, g, b);
+fn fill(r: u8, g: Option<u8>, b: Option<u8>, a: Option<u8>) {
+    instance().fill(PColor::create_color(r, g, b, a));
 }
 
 #[pyfunction]
@@ -92,8 +92,8 @@ fn no_fill() {
 }
 
 #[pyfunction]
-fn stroke(r: u8, g: u8, b: u8) {
-    instance().stroke(r, g, b);
+fn stroke(r: u8, g: Option<u8>, b: Option<u8>, a: Option<u8>) {
+    instance().stroke(PColor::create_color(r, g, b, a));
 }
 
 #[pyfunction]
@@ -107,9 +107,15 @@ fn stroke_weight(w: f32) {
 }
 
 #[pyfunction]
-fn background(r: u8, g: u8, b: u8) {
+fn background(r: u8, g: Option<u8>, b: Option<u8>, a: Option<u8>) {
     let draw = get_draw();
-    draw.background().color(rgb8(r, g, b));
+    let color = PColor::create_color(r, g, b, a);
+    match color {
+        PColor::Gray8(lum) => draw.background().color(rgb8(lum, lum, lum)),
+        PColor::Rgb8(r, g, b) => draw.background().color(rgb8(r, g, b)),
+        PColor::Rgba8(r, g, b, a) => draw.background().color(rgba8(r, g, b, a)),
+        _ => panic!("Invalid color")
+    };
 }
 
 #[pyfunction]
