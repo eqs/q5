@@ -75,6 +75,7 @@ pub struct AppState<'a> {
     pub py_draw: &'a PyAny,
     pub width: u32,
     pub height: u32,
+    pub title: &'a str,
     drawing_style: DrawingStyle,
     transform_matrix: Mat4,
     matrix_stack: Vec<Mat4>,
@@ -90,15 +91,11 @@ impl<'a> AppState<'a> {
             py, py_setup, py_update, py_draw,
             width: 800,
             height: 800,
+            title: "q5",
             drawing_style: DrawingStyle::new(),
             transform_matrix: Mat4::IDENTITY,
             matrix_stack,
         }
-    }
-
-    pub fn size(&mut self, width: u32, height: u32) {
-        self.width = width;
-        self.height = height;
     }
 
     pub fn transform(&mut self, transform_matrix: Mat4) {
