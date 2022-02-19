@@ -227,6 +227,11 @@ fn polygon(points: &PyList) {
         }));
 }
 
+#[pyfunction]
+fn save_frame(file_path: &str) {
+    get_app().main_window().capture_frame(file_path);
+}
+
 #[pymodule]
 fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
@@ -254,5 +259,6 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(line, m)?)?;
     m.add_function(wrap_pyfunction!(arrow, m)?)?;
     m.add_function(wrap_pyfunction!(polygon, m)?)?;
+    m.add_function(wrap_pyfunction!(save_frame, m)?)?;
     Ok(())
 }
