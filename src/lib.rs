@@ -11,18 +11,25 @@ struct Model {
 }
 
 #[pyfunction]
-fn run<'a>(py: Python<'a>, py_update: &'a PyAny, py_draw: &'a PyAny) {
-    set_instance(AppState::new(py, py_update, py_draw));
+fn run<'a>(
+        py: Python<'a>,
+        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny
+    ) {
+    set_instance(AppState::new(py, py_setup, py_update, py_draw));
     nannou::app(model).update(update).run();
 }
 
 fn model(app: &App) -> Model {
+    init_app(app);
+    instance().setup();
+
     let _window = app.new_window()
         .view(view)
         .event(event)
-        .size(600, 600)
+        .size(instance().width, instance().height)
+        .resizable(false)
         .build().unwrap();
-    init_app(app);
+
     Model { _window }
 }
 
@@ -53,6 +60,11 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         }
     };
     Ok(value)
+}
+
+#[pyfunction]
+fn size(width: u32, height: u32) {
+    instance().size(width, height);
 }
 
 #[pyfunction]
@@ -194,6 +206,7 @@ fn polygon(points: &PyList) {
 fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
+    m.add_function(wrap_pyfunction!(size, m)?)?;
     m.add_function(wrap_pyfunction!(push_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(pop_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(scale, m)?)?;

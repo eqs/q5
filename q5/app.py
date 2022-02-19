@@ -3,7 +3,10 @@ from .engine import run
 
 class BaseApp:
     def run(self):
-        run(self.update, self.draw)
+        run(self.setup, self.update, self.draw)
+
+    def setup(self):
+        pass
 
     def update(self):
         pass
