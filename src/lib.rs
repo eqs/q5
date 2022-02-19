@@ -88,6 +88,11 @@ fn set_loop_count(count: usize) {
 }
 
 #[pyfunction]
+fn wait() {
+    get_app().set_loop_mode(LoopMode::Wait);
+}
+
+#[pyfunction]
 fn scale(x: f32, y: f32) {
     let mat = Mat4::from_scale(Vec3::new(x, y, 1.0));
     instance().transform(mat);
@@ -229,6 +234,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(run_loop, m)?)?;
     m.add_function(wrap_pyfunction!(no_loop, m)?)?;
     m.add_function(wrap_pyfunction!(set_loop_count, m)?)?;
+    m.add_function(wrap_pyfunction!(wait, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(size, m)?)?;
     m.add_function(wrap_pyfunction!(push_matrix, m)?)?;
