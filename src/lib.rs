@@ -3,8 +3,8 @@ use pyo3::prelude::*;
 use pyo3::types::PyList;
 use pyo3::exceptions::PyAttributeError;
 
-mod core;
-use crate::core::*;
+mod system;
+use crate::system::*;
 
 struct Model {
     _window: window::Id,
@@ -70,6 +70,26 @@ fn title(title: &str) {
 #[pyfunction]
 fn size(width: u32, height: u32) {
     get_app().main_window().set_inner_size_points(width as f32, height as f32);
+}
+
+#[pyfunction]
+fn run_loop() {
+    get_app().set_loop_mode(LoopMode::RefreshSync);
+}
+
+#[pyfunction]
+fn no_loop() {
+    get_app().set_loop_mode(LoopMode::NTimes { number_of_updates: 1 });
+}
+
+#[pyfunction]
+fn set_loop_count(count: usize) {
+    get_app().set_loop_mode(LoopMode::NTimes { number_of_updates: count });
+}
+
+#[pyfunction]
+fn wait() {
+    get_app().set_loop_mode(LoopMode::Wait);
 }
 
 #[pyfunction]
@@ -211,6 +231,10 @@ fn polygon(points: &PyList) {
 fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
+    m.add_function(wrap_pyfunction!(run_loop, m)?)?;
+    m.add_function(wrap_pyfunction!(no_loop, m)?)?;
+    m.add_function(wrap_pyfunction!(set_loop_count, m)?)?;
+    m.add_function(wrap_pyfunction!(wait, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(size, m)?)?;
     m.add_function(wrap_pyfunction!(push_matrix, m)?)?;
