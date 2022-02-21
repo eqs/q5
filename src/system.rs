@@ -108,7 +108,6 @@ impl<'a> AppState<'a> {
 
     pub fn push_matrix(&mut self) {
         self.matrix_stack.push(self.transform_matrix);
-        self.transform_matrix = Mat4::IDENTITY;
     }
 
     pub fn pop_matrix(&mut self) {
