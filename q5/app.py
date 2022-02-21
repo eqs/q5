@@ -10,6 +10,10 @@ class Vector:
     y: float
     z: float = 0.0
 
+    @classmethod
+    def from_angle(cls, t, mag=1.0):
+        return cls(math.cos(t), math.sin(t)).mult(mag)
+
     def square_mag(self):
         return self.x**2 + self.y**2 + self.z**2
 
