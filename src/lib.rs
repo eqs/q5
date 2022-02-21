@@ -74,6 +74,10 @@ fn title(title: &str) {
 fn size(width: u32, height: u32) {
     get_app().main_window().set_inner_size_points(width as f32, height as f32);
 }
+#[pyfunction]
+fn full_screen(fullscreen: bool) {
+    get_app().main_window().set_fullscreen(fullscreen);
+}
 
 #[pyfunction]
 fn run_loop() {
@@ -245,6 +249,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(wait, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(size, m)?)?;
+    m.add_function(wrap_pyfunction!(full_screen, m)?)?;
     m.add_function(wrap_pyfunction!(push_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(pop_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(scale, m)?)?;
