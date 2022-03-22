@@ -16,9 +16,9 @@ struct Model {
 #[pyfunction]
 fn run<'a>(
         py: Python<'a>,
-        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny
+        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny, py_event: &'a PyAny
     ) {
-    set_instance(AppState::new(py, py_setup, py_update, py_draw));
+    set_instance(AppState::new(py, py_setup, py_update, py_draw, py_event));
     nannou::app(model).update(update).run();
 }
 
@@ -40,7 +40,9 @@ fn update(_app: &App, _model: &mut Model, _update: Update) {
     instance().update();
 }
 
-fn event(_app: &App, _model: &mut Model, _event: WindowEvent) {}
+fn event(_app: &App, _model: &mut Model, _event: WindowEvent) {
+    instance().event();
+}
 
 fn view(app: &App, _model: &Model, frame: Frame) {
     let draw = app.draw();

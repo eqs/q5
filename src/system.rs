@@ -66,6 +66,7 @@ pub trait PythonCallback {
     fn setup(&mut self);
     fn update(&mut self);
     fn draw(&mut self);
+    fn event(&mut self);
 }
 
 pub struct AppState<'a> {
@@ -73,6 +74,7 @@ pub struct AppState<'a> {
     pub py_setup: &'a PyAny,
     pub py_update: &'a PyAny,
     pub py_draw: &'a PyAny,
+    pub py_event: &'a PyAny,
     pub width: u32,
     pub height: u32,
     pub title: &'a str,
@@ -84,11 +86,11 @@ pub struct AppState<'a> {
 impl<'a> AppState<'a> {
     pub fn new(
         py: Python<'a>,
-        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny
+        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny, py_event: &'a PyAny
     ) -> Self {
         let matrix_stack = Vec::new();
         Self {
-            py, py_setup, py_update, py_draw,
+            py, py_setup, py_update, py_draw, py_event,
             width: 800,
             height: 800,
             title: "q5",
@@ -161,6 +163,11 @@ impl<'a> PythonCallback for AppState<'a> {
         }
     }
 
+    fn event(&mut self) {
+        if let Err(err) = self.py_event.call0() {
+            err.print(self.py);
+        }
+    }
 }
 
 pub struct DrawingStyle {
