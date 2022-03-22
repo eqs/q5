@@ -56,7 +56,8 @@ class Vector:
 
 class BaseApp:
     def run(self):
-        run(self.setup, self.update, self.draw, self.event)
+        run(self.setup, self.update, self.draw,
+            self.mouse_event, self.key_event)
 
     def setup(self):
         pass
@@ -67,5 +68,8 @@ class BaseApp:
     def draw(self):
         pass
 
-    def event(self):
+    def mouse_event(self):
+        pass
+
+    def key_event(self):
         pass
