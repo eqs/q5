@@ -166,13 +166,13 @@ impl<'a> PythonCallback for AppState<'a> {
     }
 
     fn mouse_event(&mut self) {
-        if let Err(err) = self.py_mouse_event.call0() {
+        if let Err(err) = self.py_mouse_event.call1((42,)) {
             err.print(self.py);
         }
     }
 
     fn key_event(&mut self) {
-        if let Err(err) = self.py_key_event.call0() {
+        if let Err(err) = self.py_key_event.call1((42,)) {
             err.print(self.py);
         }
     }

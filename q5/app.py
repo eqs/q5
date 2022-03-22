@@ -68,8 +68,8 @@ class BaseApp:
     def draw(self):
         pass
 
-    def mouse_event(self):
+    def mouse_event(self, e):
         pass
 
-    def key_event(self):
+    def key_event(self, e):
         pass
