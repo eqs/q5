@@ -4,9 +4,11 @@ use pyo3::types::PyList;
 use pyo3::exceptions::PyAttributeError;
 
 mod system;
+mod event;
 mod math_utils;
 
 use crate::system::*;
+use crate::event::add_event_class;
 use crate::math_utils::add_math_functions;
 
 struct Model {
@@ -275,6 +277,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(polygon, m)?)?;
     m.add_function(wrap_pyfunction!(save_frame, m)?)?;
 
+    add_event_class(&m)?;
     add_math_functions(&m)?;
 
     Ok(())

@@ -7,7 +7,8 @@ use nannou::prelude::*;
 use nannou::draw::properties::*;
 use nannou::draw::primitive::*;
 use nannou::draw::primitive::polygon::*;
-use nannou::color::*;
+
+use crate::event::*;
 
 static mut INSTANCE: *mut AppState = 0 as *mut AppState;
 static mut APP_INSTANCE: *mut App = 0 as *mut App;
@@ -166,7 +167,8 @@ impl<'a> PythonCallback for AppState<'a> {
     }
 
     fn mouse_event(&mut self) {
-        if let Err(err) = self.py_mouse_event.call1((42,)) {
+        let state = MouseEventState::new();
+        if let Err(err) = self.py_mouse_event.call1((state,)) {
             err.print(self.py);
         }
     }
