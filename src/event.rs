@@ -9,19 +9,19 @@ pub struct MouseEventState {
     pmouse_y: f32,
 }
 
-#[pymethods]
 impl MouseEventState {
-
-    #[new]
-    pub fn new() -> Self {
+    pub fn new(mouse_x: f32, mouse_y: f32) -> Self {
         Self {
-            mouse_x: 0.0,
-            mouse_y: 0.0,
+            mouse_x: mouse_x,
+            mouse_y: mouse_y,
             pmouse_x: 0.0,
             pmouse_y: 0.0,
         }
     }
+}
 
+#[pymethods]
+impl MouseEventState {
     #[getter]
     pub fn mouse_x(&self) -> f32 {
         self.mouse_x

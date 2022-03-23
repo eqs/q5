@@ -45,9 +45,9 @@ fn update(_app: &App, _model: &mut Model, _update: Update) {
     instance().update();
 }
 
-fn event(_app: &App, _model: &mut Model, _event: WindowEvent) {
-    instance().mouse_event();
-    instance().key_event();
+fn event(_app: &App, _model: &mut Model, event: WindowEvent) {
+    instance().mouse_event(&event);
+    instance().key_event(&event);
 }
 
 fn view(app: &App, _model: &Model, frame: Frame) {

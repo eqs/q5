@@ -67,8 +67,8 @@ pub trait PythonCallback {
     fn setup(&mut self);
     fn update(&mut self);
     fn draw(&mut self);
-    fn mouse_event(&mut self);
-    fn key_event(&mut self);
+    fn mouse_event(&mut self, event: &WindowEvent);
+    fn key_event(&mut self, event: &WindowEvent);
 }
 
 pub struct AppState<'a> {
@@ -166,14 +166,17 @@ impl<'a> PythonCallback for AppState<'a> {
         }
     }
 
-    fn mouse_event(&mut self) {
-        let state = MouseEventState::new();
+    fn mouse_event(&mut self, event: &WindowEvent) {
+        let app = get_app();
+        let state = MouseEventState::new(
+            app.mouse.x, app.mouse.y,
+        );
         if let Err(err) = self.py_mouse_event.call1((state,)) {
             err.print(self.py);
         }
     }
 
-    fn key_event(&mut self) {
+    fn key_event(&mut self, event: &WindowEvent) {
         if let Err(err) = self.py_key_event.call1((42,)) {
             err.print(self.py);
         }
