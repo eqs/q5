@@ -37,12 +37,15 @@ pub fn set_instance(py_callback: AppState) {
 }
 
 pub fn init_app(app: &App) {
+    update_app(app);
+}
+
+pub fn update_app(app: &App) {
     unsafe {
         APP_INSTANCE = transmute(app);
         DRAW_INSTANCE = transmute(Box::new(app.draw()));
     }
 }
-
 pub fn get_app() -> &'static mut App {
     if app_initialized() {
         unsafe { &mut *APP_INSTANCE }

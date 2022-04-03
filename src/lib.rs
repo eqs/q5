@@ -41,7 +41,8 @@ fn model(app: &App) -> Model {
     Model { _window }
 }
 
-fn update(_app: &App, _model: &mut Model, _update: Update) {
+fn update(app: &App, _model: &mut Model, _update: Update) {
+    update_app(app);
     instance().update();
 }
 
