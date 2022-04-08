@@ -70,8 +70,19 @@ pub trait PythonCallback {
     fn setup(&mut self);
     fn update(&mut self);
     fn draw(&mut self);
-    fn mouse_event(&mut self, event: &WindowEvent);
-    fn key_event(&mut self, event: &WindowEvent);
+}
+
+pub trait MouseCallback {
+    fn mouse_pressed(&mut self);
+    fn mouse_released(&mut self);
+    fn mouse_moved(&mut self);
+    fn mouse_entered(&mut self);
+    fn mouse_exited(&mut self);
+}
+
+pub trait KeyCallback {
+    fn key_pressed(&mut self);
+    fn key_released(&mut self);
 }
 
 pub struct AppState<'a> {
@@ -79,8 +90,15 @@ pub struct AppState<'a> {
     pub py_setup: &'a PyAny,
     pub py_update: &'a PyAny,
     pub py_draw: &'a PyAny,
-    pub py_mouse_event: &'a PyAny,
-    pub py_key_event: &'a PyAny,
+
+    pub py_mouse_pressed: &'a PyAny,
+    pub py_mouse_released: &'a PyAny,
+    pub py_mouse_moved: &'a PyAny,
+    pub py_mouse_entered: &'a PyAny,
+    pub py_mouse_exited: &'a PyAny,
+    pub py_key_pressed: &'a PyAny,
+    pub py_key_released: &'a PyAny,
+
     pub width: u32,
     pub height: u32,
     pub title: &'a str,
@@ -91,18 +109,53 @@ pub struct AppState<'a> {
 
 impl<'a> AppState<'a> {
     pub fn new(
-        py: Python<'a>, py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny,
-        py_mouse_event: &'a PyAny, py_key_event: &'a PyAny
+        py: Python<'a>,
+        py_setup: &'a PyAny,
+        py_update: &'a PyAny,
+        py_draw: &'a PyAny,
+        py_mouse_pressed: &'a PyAny,
+        py_mouse_released: &'a PyAny,
+        py_mouse_moved: &'a PyAny,
+        py_mouse_entered: &'a PyAny,
+        py_mouse_exited: &'a PyAny,
+        py_key_pressed: &'a PyAny,
+        py_key_released: &'a PyAny
     ) -> Self {
         let matrix_stack = Vec::new();
         Self {
-            py, py_setup, py_update, py_draw, py_mouse_event, py_key_event,
+            py, py_setup, py_update, py_draw,
+            py_mouse_pressed,
+            py_mouse_released,
+            py_mouse_moved,
+            py_mouse_entered,
+            py_mouse_exited,
+            py_key_pressed,
+            py_key_released,
             width: 800,
             height: 800,
             title: "q5",
             drawing_style: DrawingStyle::new(),
             transform_matrix: Mat4::IDENTITY,
             matrix_stack,
+        }
+    }
+
+    pub fn mouse_event(&mut self, event: &WindowEvent) {
+        match event {
+            MouseMoved(_) => self.mouse_moved(),
+            MousePressed(_) => self.mouse_pressed(),
+            MouseReleased(_) => self.mouse_released(),
+            MouseEntered => self.mouse_entered(),
+            MouseExited => self.mouse_exited(),
+            _ => (),
+        }
+    }
+
+    pub fn key_event(&mut self, event: &WindowEvent) {
+        match event {
+            KeyPressed(_) => self.key_pressed(),
+            KeyReleased(_) => self.key_released(),
+            _ => (),
         }
     }
 
@@ -168,19 +221,49 @@ impl<'a> PythonCallback for AppState<'a> {
             err.print(self.py);
         }
     }
+}
 
-    fn mouse_event(&mut self, event: &WindowEvent) {
-        let app = get_app();
-        let state = MouseEventState::new(
-            app.mouse.x, app.mouse.y,
-        );
-        if let Err(err) = self.py_mouse_event.call1((state,)) {
+impl<'a> MouseCallback for AppState<'a> {
+    fn mouse_pressed(&mut self) {
+        if let Err(err) = self.py_mouse_pressed.call0() {
             err.print(self.py);
         }
     }
 
-    fn key_event(&mut self, event: &WindowEvent) {
-        if let Err(err) = self.py_key_event.call1((42,)) {
+    fn mouse_released(&mut self) {
+        if let Err(err) = self.py_mouse_released.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn mouse_moved(&mut self) {
+        if let Err(err) = self.py_mouse_moved.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn mouse_entered(&mut self) {
+        if let Err(err) = self.py_mouse_entered.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn mouse_exited(&mut self) {
+        if let Err(err) = self.py_mouse_exited.call0() {
+            err.print(self.py);
+        }
+    }
+}
+
+impl<'a> KeyCallback for AppState<'a> {
+    fn key_pressed(&mut self) {
+        if let Err(err) = self.py_key_pressed.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn key_released(&mut self) {
+        if let Err(err) = self.py_key_released.call0() {
             err.print(self.py);
         }
     }

@@ -18,11 +18,26 @@ struct Model {
 #[pyfunction]
 fn run<'a>(
         py: Python<'a>,
-        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny,
-        py_mouse_event: &'a PyAny, py_key_event: &'a PyAny
+        py_setup: &'a PyAny,
+        py_update: &'a PyAny,
+        py_draw: &'a PyAny,
+        py_mouse_pressed: &'a PyAny,
+        py_mouse_released: &'a PyAny,
+        py_mouse_moved: &'a PyAny,
+        py_mouse_entered: &'a PyAny,
+        py_mouse_exited: &'a PyAny,
+        py_key_pressed: &'a PyAny,
+        py_key_released: &'a PyAny
     ) {
     set_instance(AppState::new(
-            py, py_setup, py_update, py_draw, py_mouse_event, py_key_event,
+            py, py_setup, py_update, py_draw, 
+            py_mouse_pressed,
+            py_mouse_released,
+            py_mouse_moved,
+            py_mouse_entered,
+            py_mouse_exited,
+            py_key_pressed,
+            py_key_released,
     ));
     nannou::app(model).update(update).run();
 }
