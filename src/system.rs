@@ -7,6 +7,7 @@ use nannou::prelude::*;
 use nannou::draw::properties::*;
 use nannou::draw::primitive::*;
 use nannou::draw::primitive::polygon::*;
+use nannou::event::{Key, MouseButton};
 
 use crate::event::*;
 
@@ -146,10 +147,16 @@ impl<'a> AppState<'a> {
     }
 
     pub fn mouse_event(&mut self, event: &WindowEvent) {
-        match event {
+        match *event {
             MouseMoved(_) => self.mouse_moved(),
-            MousePressed(_) => self.mouse_pressed(),
-            MouseReleased(_) => self.mouse_released(),
+            MousePressed(button) => {
+                *self.mouse_event_state.mouse_button_mut() = Some(button);
+                self.mouse_pressed();
+            },
+            MouseReleased(button) => {
+                *self.mouse_event_state.mouse_button_mut() = Some(button);
+                self.mouse_released();
+            },
             MouseEntered => self.mouse_entered(),
             MouseExited => self.mouse_exited(),
             _ => (),

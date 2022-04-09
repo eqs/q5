@@ -82,6 +82,7 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "height" => get_app().window_rect().h().to_object(py),
         "mouse_x" => get_app().mouse.x.to_object(py),
         "mouse_y" => get_app().mouse.y.to_object(py),
+        "mouse_button" => instance().mouse_event_state.mouse_button_name().to_object(py),
         "key" => instance().key_event_state.key_code().to_object(py),
         _ => {
             return Err(PyAttributeError::new_err(format!(

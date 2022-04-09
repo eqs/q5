@@ -1,18 +1,13 @@
 use pyo3::prelude::*;
-use nannou::event::Key;
+use nannou::event::{Key, MouseButton};
 
-pub enum MouseButton {
-    LEFT,
-    RIGHT,
-    CENTER,
-}
 
 pub struct MouseEventState {
     mouse_x: f32,
     mouse_y: f32,
     pmouse_x: f32,
     pmouse_y: f32,
-    button: Option<MouseButton>,
+    mouse_button: Option<MouseButton>,
 }
 
 impl MouseEventState {
@@ -22,7 +17,7 @@ impl MouseEventState {
             mouse_y: mouse_y,
             pmouse_x: 0.0,
             pmouse_y: 0.0,
-            button: None,
+            mouse_button: None,
         }
     }
 
@@ -40,6 +35,23 @@ impl MouseEventState {
 
     pub fn pmouse_y(&self) -> f32 {
         self.pmouse_y
+    }
+
+    pub fn mouse_button(&self) -> Option<MouseButton> {
+        self.mouse_button
+    }
+
+    pub fn mouse_button_mut(&mut self) -> &mut Option<MouseButton> {
+        &mut self.mouse_button
+    }
+
+    pub fn mouse_button_name(&self) -> &str {
+        match self.mouse_button {
+            Some(MouseButton::Left) => "left",
+            Some(MouseButton::Right) => "right",
+            Some(MouseButton::Middle) => "middle",
+            _ => "",
+        }
     }
 }
 
