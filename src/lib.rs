@@ -4,9 +4,11 @@ use pyo3::types::PyList;
 use pyo3::exceptions::PyAttributeError;
 
 mod system;
+mod event;
 mod math_utils;
 
 use crate::system::*;
+use crate::event::add_event_class;
 use crate::math_utils::add_math_functions;
 
 struct Model {
@@ -16,9 +18,27 @@ struct Model {
 #[pyfunction]
 fn run<'a>(
         py: Python<'a>,
-        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny
+        py_setup: &'a PyAny,
+        py_update: &'a PyAny,
+        py_draw: &'a PyAny,
+        py_mouse_pressed: &'a PyAny,
+        py_mouse_released: &'a PyAny,
+        py_mouse_moved: &'a PyAny,
+        py_mouse_entered: &'a PyAny,
+        py_mouse_exited: &'a PyAny,
+        py_key_pressed: &'a PyAny,
+        py_key_released: &'a PyAny
     ) {
-    set_instance(AppState::new(py, py_setup, py_update, py_draw));
+    set_instance(AppState::new(
+            py, py_setup, py_update, py_draw, 
+            py_mouse_pressed,
+            py_mouse_released,
+            py_mouse_moved,
+            py_mouse_entered,
+            py_mouse_exited,
+            py_key_pressed,
+            py_key_released,
+    ));
     nannou::app(model).update(update).run();
 }
 
@@ -36,11 +56,15 @@ fn model(app: &App) -> Model {
     Model { _window }
 }
 
-fn update(_app: &App, _model: &mut Model, _update: Update) {
+fn update(app: &App, _model: &mut Model, _update: Update) {
+    update_app(app);
     instance().update();
 }
 
-fn event(_app: &App, _model: &mut Model, _event: WindowEvent) {}
+fn event(_app: &App, _model: &mut Model, event: WindowEvent) {
+    instance().mouse_event(&event);
+    instance().key_event(&event);
+}
 
 fn view(app: &App, _model: &Model, frame: Frame) {
     let draw = app.draw();
@@ -56,6 +80,10 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "frame_count" => get_app().elapsed_frames().to_object(py),
         "width" => get_app().window_rect().w().to_object(py),
         "height" => get_app().window_rect().h().to_object(py),
+        "mouse_x" => get_app().mouse.x.to_object(py),
+        "mouse_y" => get_app().mouse.y.to_object(py),
+        "mouse_button" => instance().mouse_event_state.mouse_button_name().to_object(py),
+        "key" => instance().key_event_state.key_code().to_object(py),
         _ => {
             return Err(PyAttributeError::new_err(format!(
                 "module 'q5' has no attribute '{}'", name
@@ -269,6 +297,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(polygon, m)?)?;
     m.add_function(wrap_pyfunction!(save_frame, m)?)?;
 
+    add_event_class(&m)?;
     add_math_functions(&m)?;
 
     Ok(())

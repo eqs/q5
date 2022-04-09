@@ -7,7 +7,9 @@ use nannou::prelude::*;
 use nannou::draw::properties::*;
 use nannou::draw::primitive::*;
 use nannou::draw::primitive::polygon::*;
-use nannou::color::*;
+use nannou::event::{Key, MouseButton};
+
+use crate::event::*;
 
 static mut INSTANCE: *mut AppState = 0 as *mut AppState;
 static mut APP_INSTANCE: *mut App = 0 as *mut App;
@@ -36,12 +38,15 @@ pub fn set_instance(py_callback: AppState) {
 }
 
 pub fn init_app(app: &App) {
+    update_app(app);
+}
+
+pub fn update_app(app: &App) {
     unsafe {
         APP_INSTANCE = transmute(app);
         DRAW_INSTANCE = transmute(Box::new(app.draw()));
     }
 }
-
 pub fn get_app() -> &'static mut App {
     if app_initialized() {
         unsafe { &mut *APP_INSTANCE }
@@ -68,33 +73,107 @@ pub trait PythonCallback {
     fn draw(&mut self);
 }
 
+pub trait MouseCallback {
+    fn mouse_pressed(&mut self);
+    fn mouse_released(&mut self);
+    fn mouse_moved(&mut self);
+    fn mouse_entered(&mut self);
+    fn mouse_exited(&mut self);
+}
+
+pub trait KeyCallback {
+    fn key_pressed(&mut self);
+    fn key_released(&mut self);
+}
+
 pub struct AppState<'a> {
     pub py: Python<'a>,
     pub py_setup: &'a PyAny,
     pub py_update: &'a PyAny,
     pub py_draw: &'a PyAny,
+
+    pub py_mouse_pressed: &'a PyAny,
+    pub py_mouse_released: &'a PyAny,
+    pub py_mouse_moved: &'a PyAny,
+    pub py_mouse_entered: &'a PyAny,
+    pub py_mouse_exited: &'a PyAny,
+    pub py_key_pressed: &'a PyAny,
+    pub py_key_released: &'a PyAny,
+
     pub width: u32,
     pub height: u32,
     pub title: &'a str,
     drawing_style: DrawingStyle,
     transform_matrix: Mat4,
     matrix_stack: Vec<Mat4>,
+
+    pub mouse_event_state: MouseEventState,
+    pub key_event_state: KeyEventState,
 }
 
 impl<'a> AppState<'a> {
     pub fn new(
         py: Python<'a>,
-        py_setup: &'a PyAny, py_update: &'a PyAny, py_draw: &'a PyAny
+        py_setup: &'a PyAny,
+        py_update: &'a PyAny,
+        py_draw: &'a PyAny,
+        py_mouse_pressed: &'a PyAny,
+        py_mouse_released: &'a PyAny,
+        py_mouse_moved: &'a PyAny,
+        py_mouse_entered: &'a PyAny,
+        py_mouse_exited: &'a PyAny,
+        py_key_pressed: &'a PyAny,
+        py_key_released: &'a PyAny
     ) -> Self {
         let matrix_stack = Vec::new();
         Self {
             py, py_setup, py_update, py_draw,
+            py_mouse_pressed,
+            py_mouse_released,
+            py_mouse_moved,
+            py_mouse_entered,
+            py_mouse_exited,
+            py_key_pressed,
+            py_key_released,
             width: 800,
             height: 800,
             title: "q5",
             drawing_style: DrawingStyle::new(),
             transform_matrix: Mat4::IDENTITY,
             matrix_stack,
+            mouse_event_state: MouseEventState::new(0.0, 0.0),
+            key_event_state: KeyEventState::new(),
+        }
+    }
+
+    pub fn mouse_event(&mut self, event: &WindowEvent) {
+        match *event {
+            MouseMoved(_) => self.mouse_moved(),
+            MousePressed(button) => {
+                *self.mouse_event_state.mouse_button_mut() = Some(button);
+                self.mouse_pressed();
+            },
+            MouseReleased(button) => {
+                *self.mouse_event_state.mouse_button_mut() = Some(button);
+                self.mouse_released();
+            },
+            MouseEntered => self.mouse_entered(),
+            MouseExited => self.mouse_exited(),
+            _ => (),
+        }
+    }
+
+    pub fn key_event(&mut self, event: &WindowEvent) {
+        match *event {
+            KeyPressed(key) => {
+                *self.key_event_state.key_mut() = Some(key);
+                self.key_pressed();
+            },
+            KeyReleased(key) => {
+                *self.key_event_state.key_mut() = Some(key);
+                self.key_released();
+            },
+            _ => *self.key_event_state.key_mut() = None,
         }
     }
 
@@ -160,7 +239,52 @@ impl<'a> PythonCallback for AppState<'a> {
             err.print(self.py);
         }
     }
+}
 
+impl<'a> MouseCallback for AppState<'a> {
+    fn mouse_pressed(&mut self) {
+        if let Err(err) = self.py_mouse_pressed.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn mouse_released(&mut self) {
+        if let Err(err) = self.py_mouse_released.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn mouse_moved(&mut self) {
+        if let Err(err) = self.py_mouse_moved.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn mouse_entered(&mut self) {
+        if let Err(err) = self.py_mouse_entered.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn mouse_exited(&mut self) {
+        if let Err(err) = self.py_mouse_exited.call0() {
+            err.print(self.py);
+        }
+    }
+}
+
+impl<'a> KeyCallback for AppState<'a> {
+    fn key_pressed(&mut self) {
+        if let Err(err) = self.py_key_pressed.call0() {
+            err.print(self.py);
+        }
+    }
+
+    fn key_released(&mut self) {
+        if let Err(err) = self.py_key_released.call0() {
+            err.print(self.py);
+        }
+    }
 }
 
 pub struct DrawingStyle {

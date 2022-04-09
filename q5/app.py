@@ -56,7 +56,18 @@ class Vector:
 
 class BaseApp:
     def run(self):
-        run(self.setup, self.update, self.draw)
+        run(
+            self.setup,
+            self.update,
+            self.draw,
+            self.mouse_pressed,
+            self.mouse_released,
+            self.mouse_moved,
+            self.mouse_entered,
+            self.mouse_exited,
+            self.key_pressed,
+            self.key_released
+        )
 
     def setup(self):
         pass
@@ -65,4 +76,25 @@ class BaseApp:
         pass
 
     def draw(self):
+        pass
+
+    def mouse_pressed(self):
+        pass
+
+    def mouse_released(self):
+        pass
+
+    def mouse_moved(self):
+        pass
+
+    def mouse_entered(self):
+        pass
+
+    def mouse_exited(self):
+        pass
+
+    def key_pressed(self):
+        pass
+
+    def key_released(self):
         pass

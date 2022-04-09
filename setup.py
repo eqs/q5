@@ -5,7 +5,7 @@ from setuptools_rust import Binding, RustExtension
 
 setup(
     name='q5',
-    version='0.0.3',
+    version='0.0.4-dev',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     packages=find_packages(),
