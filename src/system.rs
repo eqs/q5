@@ -105,6 +105,9 @@ pub struct AppState<'a> {
     drawing_style: DrawingStyle,
     transform_matrix: Mat4,
     matrix_stack: Vec<Mat4>,
+
+    pub mouse_event_state: MouseEventState,
+    pub key_event_state: KeyEventState,
 }
 
 impl<'a> AppState<'a> {
@@ -137,6 +140,8 @@ impl<'a> AppState<'a> {
             drawing_style: DrawingStyle::new(),
             transform_matrix: Mat4::IDENTITY,
             matrix_stack,
+            mouse_event_state: MouseEventState::new(0.0, 0.0),
+            key_event_state: KeyEventState::new(),
         }
     }
 
@@ -152,10 +157,16 @@ impl<'a> AppState<'a> {
     }
 
     pub fn key_event(&mut self, event: &WindowEvent) {
-        match event {
-            KeyPressed(_) => self.key_pressed(),
-            KeyReleased(_) => self.key_released(),
-            _ => (),
+        match *event {
+            KeyPressed(key) => {
+                *self.key_event_state.key_mut() = Some(key);
+                self.key_pressed();
+            },
+            KeyReleased(key) => {
+                *self.key_event_state.key_mut() = Some(key);
+                self.key_released();
+            },
+            _ => *self.key_event_state.key_mut() = None,
         }
     }
 
