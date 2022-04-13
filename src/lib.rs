@@ -6,10 +6,12 @@ use pyo3::exceptions::PyAttributeError;
 mod system;
 mod event;
 mod math_utils;
+mod constant;
 
 use crate::system::*;
 use crate::event::add_event_class;
 use crate::math_utils::add_math_functions;
+use crate::constant::add_module_constants;
 
 struct Model {
     _window: window::Id,
@@ -82,7 +84,13 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
         "height" => get_app().window_rect().h().to_object(py),
         "mouse_x" => get_app().mouse.x.to_object(py),
         "mouse_y" => get_app().mouse.y.to_object(py),
-        "mouse_button" => instance().mouse_event_state.mouse_button_name().to_object(py),
+        "mouse_button" => {
+            let code = instance().mouse_event_state.mouse_button_code();
+            match code {
+                Some(v) => v.to_object(py),
+                _ => py.None(),
+            }
+        },
         "key" => instance().key_event_state.key_code().to_object(py),
         _ => {
             return Err(PyAttributeError::new_err(format!(
@@ -299,6 +307,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
 
     add_event_class(&m)?;
     add_math_functions(&m)?;
+    add_module_constants(&m)?;
 
     Ok(())
 }
