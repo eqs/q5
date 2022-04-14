@@ -271,6 +271,17 @@ fn polygon(points: &PyList) {
 }
 
 #[pyfunction]
+fn polyline(points: &PyList) {
+    let points = points.extract::<Vec<(f32, f32)>>().unwrap();
+    let draw = get_draw();
+    draw.polyline()
+        .path_style()
+        .points(points.iter().map(|p| {
+            (p.0, p.1)
+        }));
+}
+
+#[pyfunction]
 fn save_frame(file_path: &str) {
     get_app().main_window().capture_frame(file_path);
 }
@@ -303,6 +314,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(line, m)?)?;
     m.add_function(wrap_pyfunction!(arrow, m)?)?;
     m.add_function(wrap_pyfunction!(polygon, m)?)?;
+    m.add_function(wrap_pyfunction!(polyline, m)?)?;
     m.add_function(wrap_pyfunction!(save_frame, m)?)?;
 
     add_event_class(&m)?;
