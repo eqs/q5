@@ -116,7 +116,7 @@ fn full_screen(fullscreen: bool) {
 }
 
 #[pyfunction]
-fn run_loop() {
+fn loop_forever() {
     get_app().set_loop_mode(LoopMode::RefreshSync);
 }
 
@@ -126,12 +126,12 @@ fn no_loop() {
 }
 
 #[pyfunction]
-fn set_loop_count(count: usize) {
+fn loop_ntimes(count: usize) {
     get_app().set_loop_mode(LoopMode::NTimes { number_of_updates: count });
 }
 
 #[pyfunction]
-fn wait() {
+fn loop_wait() {
     get_app().set_loop_mode(LoopMode::Wait);
 }
 
@@ -290,10 +290,10 @@ fn save_frame(file_path: &str) {
 fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__getattr__, m)?)?;
     m.add_function(wrap_pyfunction!(run, m)?)?;
-    m.add_function(wrap_pyfunction!(run_loop, m)?)?;
+    m.add_function(wrap_pyfunction!(loop_forever, m)?)?;
     m.add_function(wrap_pyfunction!(no_loop, m)?)?;
-    m.add_function(wrap_pyfunction!(set_loop_count, m)?)?;
-    m.add_function(wrap_pyfunction!(wait, m)?)?;
+    m.add_function(wrap_pyfunction!(loop_ntimes, m)?)?;
+    m.add_function(wrap_pyfunction!(loop_wait, m)?)?;
     m.add_function(wrap_pyfunction!(title, m)?)?;
     m.add_function(wrap_pyfunction!(size, m)?)?;
     m.add_function(wrap_pyfunction!(full_screen, m)?)?;
