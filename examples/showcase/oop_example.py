@@ -4,7 +4,7 @@ from typing import Tuple
 from dataclasses import dataclass
 import q5
 
-N_STARS = 128
+N_STARS = 64
 colors = [
     (224, 221, 0), (112, 22, 224), (224, 72, 11), (22, 224, 192)
 ]
@@ -63,24 +63,30 @@ class Star:
         q5.pop_matrix()
 
 
+def generate_star(x=0.0, y=0.0):
+    mag = random.uniform(1.0, 6.0)
+    angle = random.uniform(0.0, math.pi * 2.0)
+    radius = random.uniform(16.0, 48.0)
+    angle_vel = random.uniform(0.15, 0.75)
+    if random.random() > 0.5:
+        angle_vel = -angle_vel
+
+    star = Star(
+        q5.Vector(x, y),
+        q5.Vector.from_angle(angle, mag=mag),
+        radius=radius,
+        angle_vel=angle_vel,
+        color=random.choice(colors)
+    )
+
+    return star
+
+
 class App(q5.BaseApp):
     def setup(self):
         self.stars = []
         for k in range(N_STARS):
-            mag = random.uniform(1.0, 6.0)
-            angle = random.uniform(0.0, math.pi * 2.0)
-            radius = random.uniform(16.0, 48.0)
-            angle_vel = random.uniform(0.15, 0.75)
-            if random.random() > 0.5:
-                angle_vel = -angle_vel
-
-            star = Star(
-                q5.Vector(0.0, 0.0),
-                q5.Vector.from_angle(angle, mag=mag),
-                radius=radius,
-                angle_vel=angle_vel,
-                color=random.choice(colors)
-            )
+            star = generate_star()
             self.stars.append(star)
 
     def update(self):
@@ -91,6 +97,11 @@ class App(q5.BaseApp):
         q5.background(0, 0, 0)
         for star in self.stars:
             star.draw()
+
+    def mouse_pressed(self):
+        if q5.mouse_button == q5.MOUSE_LEFT:
+            star = generate_star(q5.mouse_x, q5.mouse_y)
+            self.stars.append(star)
 
 
 if __name__ == '__main__':
