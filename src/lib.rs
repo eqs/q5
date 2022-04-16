@@ -101,16 +101,24 @@ fn __getattr__(py: Python, name: &str) -> PyResult<PyObject> {
     Ok(value)
 }
 
+/// The function sets the title of the sketch window.
 #[pyfunction]
+#[pyo3(text_signature = "(title, /)")]
 fn title(title: &str) {
     get_app().main_window().set_title(title);
 }
 
+/// Define the sketch window width and height in units of pixels.
 #[pyfunction]
+#[pyo3(text_signature = "(width, height, /)")]
 fn size(width: u32, height: u32) {
     get_app().main_window().set_inner_size_points(width as f32, height as f32);
 }
+
+/// Set the sketch window to fullscreen on the primary monitor.
+/// ``True`` enables fullscreen, ``False`` disables fullscreen.
 #[pyfunction]
+#[pyo3(text_signature = "(fullscreen, /)")]
 fn full_screen(fullscreen: bool) {
     get_app().main_window().set_fullscreen(fullscreen);
 }
@@ -141,13 +149,20 @@ fn scale(x: f32, y: f32) {
     instance().transform(mat);
 }
 
+/// Rotates the axis the amount specified by the ``angle``.
+/// Angles should be specified in radians.
 #[pyfunction]
+#[pyo3(text_signature = "(angle, /)")]
 fn rotate(angle: f32) {
     let mat = Mat4::from_rotation_z(angle);
     instance().transform(mat);
 }
 
+/// Translates the axis the amount specified by the ``x`` and ``y``.
+/// The parameter ``x`` specifies horizontal displacement,
+/// the parameter ``y`` specifies vertical displacement.
 #[pyfunction]
+#[pyo3(text_signature = "(x, y, /)")]
 fn translate(x: f32, y: f32) {
     let mat = Mat4::from_translation(Vec3::new(x, y, 0.0));
     instance().transform(mat);
