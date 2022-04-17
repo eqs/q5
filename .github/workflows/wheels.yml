@@ -29,10 +29,10 @@ jobs:
             # CIBW_TEST_COMMAND: "pytest"
           CIBW_BEFORE_BUILD_LINUX: "curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable;\
                                     source $HOME/.cargo/env;\
-                                    sudo apt-get install build-essential python cmake pkg-config;\
-                                    sudo apt-get install libasound2-dev;\
-                                    sudo apt install libxcb-shape0-dev libxcb-xfixes0-dev;\
-                                    sudo dnf install vulkan vulkan-info"
+                                    sudo apt-get -y install build-essential python cmake pkg-config;\
+                                    sudo apt-get -y install libasound2-dev;\
+                                    sudo apt -y install libxcb-shape0-dev libxcb-xfixes0-dev;\
+                                    sudo dnf -y install vulkan vulkan-info"
 
       - uses: actions/upload-artifact@v3
         with:
