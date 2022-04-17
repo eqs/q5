@@ -38,3 +38,23 @@ jobs:
         with:
           name: ${{ matrix.python }}-${{ matrix.os }}
           path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+    - name: Build sdist
+      run: |
+        python -m build -s -o dist/
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*.tar.gz
