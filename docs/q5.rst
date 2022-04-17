@@ -1,0 +1,8 @@
+q5 package
+==========
+
+.. automodule:: q5
+   :members:
+   :undoc-members:
+   :inherited-members:
+   :imported-members:
