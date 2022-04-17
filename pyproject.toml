@@ -2,9 +2,9 @@
 requires = [
     "setuptools==58.0.4",
     "setuptools-rust==1.1.2",
+    "setuptools-scm==6.4.2",
     "wheel==0.37.0",
 ]
 
-# [tool.cibuildwheel]
-# skip = "cp36-* cp37-* pp37-* pp38-macosx* *-manylinux_i686 *_ppc64le *_s390x *-musllinux*"
-# build-verbosity = "3"
+[tool.setuptools_scm]
+write_to = "q5/_version.py"

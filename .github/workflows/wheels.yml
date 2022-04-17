@@ -60,7 +60,7 @@ jobs:
 
     - name: Build sdist
       run: |
-        python -m pip install --upgrade pip setuptools setuptools-rust
+        python -m pip install --upgrade pip setuptools setuptools-rust setuptools-scm
         python setup.py sdist
 
     - uses: actions/upload-artifact@v2
