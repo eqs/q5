@@ -6,3 +6,4 @@ q5 package
    :undoc-members:
    :inherited-members:
    :imported-members:
+   :exclude-members: run
