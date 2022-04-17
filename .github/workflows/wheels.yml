@@ -20,10 +20,12 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install Rust toolchain
+      - name: Install Rust toolchain for Linux
+        if: startsWith(matrix.os, 'ubuntu')
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: "x86_64-unknown-linux-gnu"
           profile: minimal
           default: true
 
