@@ -9,7 +9,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, windows-2019, macOS-10.15]
+        os: [windows-2019, macOS-10.15]
+          # TODO: Add Ubuntu support like:
+          # os: [ubuntu-20.04, windows-2019, macOS-10.15]
         arch: [auto]
 
     steps:
