@@ -33,7 +33,7 @@ jobs:
           CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp* *-win32 *-manylinux_i686"
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_TEST_REQUIRES: "pytest"
-            # CIBW_TEST_COMMAND: "pytest"
+          CIBW_TEST_COMMAND:  "python -c \"import q5\""
           CIBW_BEFORE_BUILD_LINUX: "sudo apt-get -y install build-essential python cmake pkg-config;\
                                     sudo apt-get -y install libasound2-dev;\
                                     sudo apt -y install libxcb-shape0-dev libxcb-xfixes0-dev;\
