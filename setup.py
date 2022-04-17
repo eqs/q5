@@ -21,7 +21,6 @@ setup(
     license='MIT',
     python_requires='>=3.8',
     classifiers=[
-        'Development Status :: 3 - Alpha',
         'Intended Audience :: Education',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
