@@ -28,6 +28,7 @@ jobs:
           CIBW_TEST_REQUIRES: "pytest"
             # CIBW_TEST_COMMAND: "pytest"
           CIBW_BEFORE_BUILD_LINUX: "curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable;\
+                                    source $HOME/.cargo/env;\
                                     sudo apt-get install build-essential python cmake pkg-config;\
                                     sudo apt-get install libasound2-dev;\
                                     sudo apt install libxcb-shape0-dev libxcb-xfixes0-dev;\
