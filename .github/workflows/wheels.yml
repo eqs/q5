@@ -43,7 +43,6 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.python }}-${{ matrix.os }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
