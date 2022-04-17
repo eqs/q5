@@ -20,6 +20,13 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.1
         env:
@@ -27,9 +34,7 @@ jobs:
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_TEST_REQUIRES: "pytest"
             # CIBW_TEST_COMMAND: "pytest"
-          CIBW_BEFORE_BUILD_LINUX: "curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable;\
-                                    source $HOME/.cargo/env;\
-                                    sudo apt-get -y install build-essential python cmake pkg-config;\
+          CIBW_BEFORE_BUILD_LINUX: "sudo apt-get -y install build-essential python cmake pkg-config;\
                                     sudo apt-get -y install libasound2-dev;\
                                     sudo apt -y install libxcb-shape0-dev libxcb-xfixes0-dev;\
                                     sudo dnf -y install vulkan vulkan-info"
