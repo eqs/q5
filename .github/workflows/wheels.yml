@@ -52,13 +52,14 @@ jobs:
       with:
         fetch-depth: 0
 
-      - uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'
+    - uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
 
     - name: Build sdist
       run: |
-        python -m build -s -o dist/
+        python -m pip install --upgrade pip setuptools setuptools-rust
+        python setup.py sdist
 
     - uses: actions/upload-artifact@v2
       with:
