@@ -29,4 +29,8 @@ setup(
         'Topic :: Multimedia :: Graphics',
         'Topic :: Multimedia :: Sound/Audio'
     ],
+    use_scm_version=True,
+    setup_requires=[
+        "setuptools_scm"
+    ]
 )
