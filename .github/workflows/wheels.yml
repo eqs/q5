@@ -26,6 +26,7 @@ jobs:
           curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
           source ~/.cargo/env
           rustup target add "x86_64-unknown-linux-gnu"
+          rustup update stable
 
       - name: Install dependencies on Linux
         if: startsWith(matrix.os, 'ubuntu')
