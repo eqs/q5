@@ -30,10 +30,13 @@ jobs:
       - name: Install dependencies on Linux
         if: startsWith(matrix.os, 'ubuntu')
         run: |
+          sudo add-apt-repository ppa:oibaf/graphics-drivers
+          sudo apt update
+          sudo apt upgrade
+          sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-utils
           sudo apt-get -y install build-essential python cmake pkg-config
           sudo apt-get -y install libasound2-dev
           sudo apt -y install libxcb-shape0-dev libxcb-xfixes0-dev
-          sudo dnf -y install vulkan vulkan-info
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.3.1
