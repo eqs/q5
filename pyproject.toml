@@ -8,3 +8,4 @@ requires = [
 
 [tool.setuptools_scm]
 write_to = "q5/_version.py"
+local_scheme = "dirty-tag"

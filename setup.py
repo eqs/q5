@@ -5,7 +5,6 @@ from setuptools_rust import Binding, RustExtension
 
 setup(
     name='q5',
-    version='0.1.0-dev',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     packages=find_packages(),
@@ -29,7 +28,6 @@ setup(
         'Topic :: Multimedia :: Graphics',
         'Topic :: Multimedia :: Sound/Audio'
     ],
-    use_scm_version=True,
     setup_requires=[
         "setuptools_scm"
     ]
