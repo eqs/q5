@@ -1,28 +1,25 @@
 # q5
 
 [![PyPI version](https://badge.fury.io/py/q5.svg)](https://badge.fury.io/py/q5)
+[![Downloads](https://pepy.tech/badge/q5)](https://pepy.tech/project/q5)
 
 Creative coding framework for Python
 
 ## Installation
 
-1. Install Rust lang: https://www.rust-lang.org/
-1. Run commands:
+You can install q5 with:
+
 ```
-pip install setuptools-rust
 pip install q5
-```
-
-## Development
-
-```
-pip install setuptools-rust
-python setup.py develop
 ```
 
 ## Usage
 
-### Template
+### Examples
+
+See [examples](https://github.com/eqs/q5/tree/main/examples).
+
+### Project Template
 
 ```python
 # -*- coding: utf-8 -*-
@@ -45,3 +42,16 @@ if __name__ == '__main__':
     app = App()
     app.run()
 ```
+
+## Development
+
+1. Install Rust lang: https://www.rust-lang.org/
+1. Run commands:
+```
+pip install setuptools-rust
+python setup.py develop
+```
+
+## License
+
+MIT
