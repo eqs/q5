@@ -1,9 +1,18 @@
 q5 package
 ==========
 
+Module contents
+---------------
+
 .. automodule:: q5
    :members:
    :undoc-members:
-   :inherited-members:
-   :imported-members:
-   :exclude-members: run
+   :show-inheritance:
+
+q5.app module
+-------------
+
+.. automodule:: q5.app
+   :members:
+   :undoc-members:
+   :show-inheritance:
