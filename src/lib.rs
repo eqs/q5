@@ -2,11 +2,14 @@ use nannou::prelude::*;
 use pyo3::prelude::*;
 use pyo3::types::PyList;
 use pyo3::exceptions::PyAttributeError;
+use numpy::PyArrayDyn;
 
 mod system;
 mod event;
 mod math_utils;
 mod constant;
+#[macro_use]
+mod utils;
 
 use crate::system::*;
 use crate::event::add_event_class;
@@ -260,14 +263,22 @@ fn arrow(
 
 #[pyfunction]
 fn polygon(points: &PyList) {
-    let points = points.extract::<Vec<(f32, f32)>>().unwrap();
     let draw = get_draw();
-    draw.polygon()
-        .fill_style()
-        .stroke_style()
-        .points(points.iter().map(|p| {
-            (p.0, p.1)
-        }));
+    type_switch!(
+        points,
+        PyArrayDyn<f64>, {
+            // TODO: Implement the case of points are numpy.ndarray
+        },
+        PyList, {
+            let points = points.extract::<Vec<(f32, f32)>>().unwrap();
+            draw.polygon()
+                .fill_style()
+                .stroke_style()
+                .points(points.iter().map(|p| {
+                    (p.0, p.1)
+                }));
+        }
+    );
 }
 
 #[pyfunction]
