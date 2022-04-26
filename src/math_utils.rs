@@ -1,6 +1,5 @@
 use pyo3::prelude::*;
-use ndarray::{ArrayD, ArrayViewD, ArrayViewMutD};
-use numpy::{Element, IntoPyArray, PyArrayDyn};
+use numpy::{IntoPyArray, PyArrayDyn};
 
 #[pyfunction]
 fn some_func() -> u32{
