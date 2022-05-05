@@ -16,6 +16,12 @@ setup(
             path='Cargo.toml',
             binding=Binding.PyO3,
             debug=False,
+        ),
+        RustExtension(
+            'q5.numpy_lib',
+            path='q5_numpy/Cargo.toml',
+            binding=Binding.PyO3,
+            debug=False,
         )
     ],
     license='MIT',
