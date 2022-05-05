@@ -5,11 +5,13 @@ use pyo3::exceptions::PyAttributeError;
 
 mod system;
 mod event;
+mod numpy_lib;
 mod math_utils;
 mod constant;
 
 use crate::system::*;
 use crate::event::add_event_class;
+use crate::numpy_lib::add_numpy_functions;
 use crate::math_utils::add_math_functions;
 use crate::constant::add_module_constants;
 
@@ -259,7 +261,7 @@ fn arrow(
 }
 
 #[pyfunction]
-fn polygon(points: &PyList) {
+fn polygon_list(points: &PyList) {
     let points = points.extract::<Vec<(f32, f32)>>().unwrap();
     let draw = get_draw();
     draw.polygon()
@@ -271,7 +273,7 @@ fn polygon(points: &PyList) {
 }
 
 #[pyfunction]
-fn polyline(points: &PyList) {
+fn polyline_list(points: &PyList) {
     let points = points.extract::<Vec<(f32, f32)>>().unwrap();
     let draw = get_draw();
     draw.polyline()
@@ -313,13 +315,14 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(rect, m)?)?;
     m.add_function(wrap_pyfunction!(line, m)?)?;
     m.add_function(wrap_pyfunction!(arrow, m)?)?;
-    m.add_function(wrap_pyfunction!(polygon, m)?)?;
-    m.add_function(wrap_pyfunction!(polyline, m)?)?;
+    m.add_function(wrap_pyfunction!(polygon_list, m)?)?;
+    m.add_function(wrap_pyfunction!(polyline_list, m)?)?;
     m.add_function(wrap_pyfunction!(save_frame, m)?)?;
 
     add_event_class(&m)?;
-    add_math_functions(&m)?;
+    add_numpy_functions(&m)?;
     add_module_constants(&m)?;
+    add_math_functions(&m)?;
 
     Ok(())
 }

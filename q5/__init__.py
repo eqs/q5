@@ -1,4 +1,5 @@
 from .engine import *  #noqa F403
+from .draw import *  #noqa F403
 from .app import BaseApp, Vector
 
 try:
