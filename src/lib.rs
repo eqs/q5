@@ -2,7 +2,7 @@ use nannou::prelude::*;
 use pyo3::prelude::*;
 use pyo3::types::PyList;
 use pyo3::exceptions::PyAttributeError;
-use numpy::PyArrayDyn;
+use numpy::*;
 
 mod system;
 mod event;
@@ -263,33 +263,27 @@ fn arrow(
 
 #[pyfunction]
 fn polygon(points: &PyList) {
-    let draw = get_draw();
-    type_switch!(
-        points,
-        PyArrayDyn<f64>, {
-            // TODO: Implement the case of points are numpy.ndarray
-        },
-        PyList, {
-            let points = points.extract::<Vec<(f32, f32)>>().unwrap();
-            draw.polygon()
-                .fill_style()
-                .stroke_style()
-                .points(points.iter().map(|p| {
-                    (p.0, p.1)
-                }));
-        }
-    );
-}
-
-#[pyfunction]
-fn polyline(points: &PyList) {
     let points = points.extract::<Vec<(f32, f32)>>().unwrap();
     let draw = get_draw();
-    draw.polyline()
-        .path_style()
+    draw.polygon()
+        .fill_style()
+        .stroke_style()
         .points(points.iter().map(|p| {
             (p.0, p.1)
         }));
+}
+
+#[pyfunction]
+fn polyline(points: &PyArray<f64, Ix2>) {
+    unsafe {
+        let points = points.as_array();
+        let draw = get_draw();
+        draw.polyline()
+            .path_style()
+            .points(points.outer_iter().map(|p| {
+                pt2(p[[0]] as f32, p[[1]] as f32)
+            }));
+    }
 }
 
 #[pyfunction]
