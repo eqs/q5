@@ -20,6 +20,9 @@ setup(
     ],
     license='MIT',
     python_requires='>=3.8',
+    install_requires=[
+        'numpy>=1.20'
+    ],
     classifiers=[
         'Intended Audience :: Education',
         'License :: OSI Approved :: MIT License',
