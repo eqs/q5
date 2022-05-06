@@ -138,8 +138,11 @@ fn loop_wait() {
 }
 
 #[pyfunction]
-fn scale(x: f32, y: f32) {
-    let mat = Mat4::from_scale(Vec3::new(x, y, 1.0));
+fn scale(x: f32, y: Option<f32>) {
+    let mat = match y {
+        Some(y) => Mat4::from_scale(Vec3::new(x, y, 1.0)),
+        None => Mat4::from_scale(Vec3::new(x, x, 1.0)),
+    };
     instance().transform(mat);
 }
 
