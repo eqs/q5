@@ -29,8 +29,5 @@ setup(
         'Programming Language :: Python :: 3',
         'Topic :: Multimedia :: Graphics',
         'Topic :: Multimedia :: Sound/Audio'
-    ],
-    setup_requires=[
-        "setuptools_scm"
     ]
 )

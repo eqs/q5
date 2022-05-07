@@ -2,7 +2,7 @@
 requires = [
     "setuptools==58.0.4",
     "setuptools-rust==1.1.2",
-    "setuptools-scm==6.4.2",
+    "setuptools-scm[toml]==6.4.2",
     "wheel==0.37.0",
 ]
 
