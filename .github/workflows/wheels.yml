@@ -38,8 +38,8 @@ jobs:
              sudo apt -y install libxcb-shape0-dev libxcb-xfixes0-dev; \
              pip install --upgrade pip"
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH"'
-          CIBW_MANYLINUX_X86_64_IMAGE: rust:1.58-slim
-          CIBW_MANYLINUX_I686_IMAGE: rust:1.58-slim
+          CIBW_MANYLINUX_X86_64_IMAGE: rust:1.58
+          CIBW_MANYLINUX_I686_IMAGE: rust:1.58
 
       - uses: actions/upload-artifact@v3
         with:
