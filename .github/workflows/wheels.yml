@@ -29,13 +29,13 @@ jobs:
           CIBW_TEST_COMMAND:  "python -c \"import q5\""
           CIBW_BEFORE_BUILD: "pip install --upgrade setuptools-scm"
           CIBW_BEFORE_BUILD_LINUX: |
-            "sudo add-apt-repository ppa:oibaf/graphics-drivers; \
-             sudo apt update; \
-             sudo apt upgrade; \
-             sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-utils; \
-             sudo apt-get -y install build-essential python cmake pkg-config; \
-             sudo apt-get -y install libasound2-dev; \
-             sudo apt -y install libxcb-shape0-dev libxcb-xfixes0-dev; \
+            "add-apt-repository ppa:oibaf/graphics-drivers; \
+             apt update; \
+             apt upgrade; \
+             apt install libvulkan1 mesa-vulkan-drivers vulkan-utils; \
+             apt-get -y install build-essential python cmake pkg-config; \
+             apt-get -y install libasound2-dev; \
+             apt -y install libxcb-shape0-dev libxcb-xfixes0-dev; \
              pip install --upgrade pip"
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_MANYLINUX_X86_64_IMAGE: eqseqs/cibuildwheel-rust
