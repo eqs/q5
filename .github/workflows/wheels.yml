@@ -23,14 +23,16 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.5.0
         env:
-          CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp* *-win32 *-manylinux_i686 *-musllinux_i686 *i686-unknown-linux-*"
+          CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp* *-win32 *-manylinux_i686 *-musllinux* *i686-unknown-linux-*"
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_TEST_REQUIRES: "pytest"
           CIBW_TEST_COMMAND:  "python -c \"import q5\""
           CIBW_BEFORE_BUILD: "pip install --upgrade setuptools-scm setuptools-rust auditwheel"
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH"'
           CIBW_MANYLINUX_X86_64_IMAGE: eqseqs/cibuildwheel-rust
-          CIBW_MANYLINUX_I686_IMAGE: eqseqs/cibuildwheel-rust
+            # CIBW_MANYLINUX_I686_IMAGE: eqseqs/cibuildwheel-rust
+            # CIBW_MUSLLINUX_X86_64_IMAGE: eqseqs/cibuildwheel-rust
+            # CIBW_MUSLLINUX_I686_IMAGE: eqseqs/cibuildwheel-rust
 
       - uses: actions/upload-artifact@v3
         with:
