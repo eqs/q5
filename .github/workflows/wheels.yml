@@ -20,28 +20,19 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install dependencies on Linux
-        if: startsWith(matrix.os, 'ubuntu')
-        run: |
-          sudo add-apt-repository ppa:oibaf/graphics-drivers
-          sudo apt update
-          sudo apt upgrade
-          sudo apt install libvulkan1 mesa-vulkan-drivers vulkan-utils
-          sudo apt-get -y install build-essential python cmake pkg-config
-          sudo apt-get -y install libasound2-dev
-          sudo apt -y install libxcb-shape0-dev libxcb-xfixes0-dev
-          pip install --upgrade pip
-
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.3.1
+        uses: pypa/cibuildwheel@v2.5.0
         env:
-          CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp* *-win32 *-manylinux_i686 *-musllinux_i686 *i686-unknown-linux-*"
+          CIBW_SKIP: "cp27-* cp34-* cp35-* cp36-* pp* *-win32 *-manylinux_i686 *-musllinux* *i686-unknown-linux-*"
           CIBW_ARCHS_LINUX: ${{ matrix.arch }}
           CIBW_TEST_REQUIRES: "pytest"
           CIBW_TEST_COMMAND:  "python -c \"import q5\""
-          CIBW_BEFORE_BUILD_LINUX: >
-            curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain=nightly --profile=minimal -y
+          CIBW_BEFORE_BUILD: "pip install --upgrade setuptools-scm setuptools-rust auditwheel"
           CIBW_ENVIRONMENT_LINUX: 'PATH="$HOME/.cargo/bin:$PATH"'
+          CIBW_MANYLINUX_X86_64_IMAGE: eqseqs/cibuildwheel-rust
+            # CIBW_MANYLINUX_I686_IMAGE: eqseqs/cibuildwheel-rust
+            # CIBW_MUSLLINUX_X86_64_IMAGE: eqseqs/cibuildwheel-rust
+            # CIBW_MUSLLINUX_I686_IMAGE: eqseqs/cibuildwheel-rust
 
       - uses: actions/upload-artifact@v3
         with:
