@@ -225,6 +225,10 @@ impl<'a> AppState<'a> {
     pub fn font_size(&mut self, font_size: u32) {
         self.font_style.font_size = font_size;
     }
+
+    pub fn text_leading(&mut self, text_leading: f32) {
+        self.font_style.line_spacing = text_leading;
+    }
 }
 
 impl<'a> PythonCallback for AppState<'a> {
@@ -432,5 +436,6 @@ impl<'a> TextStyle for Drawing<'a, Text> {
             _ => self,
         };
         ctx.font_size(state.font_style.font_size)
+            .line_spacing(state.font_style.line_spacing)
     }
 }

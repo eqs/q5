@@ -199,6 +199,11 @@ fn font_size(font_size: u32) {
 }
 
 #[pyfunction]
+fn text_leading(text_leading: f32) {
+    instance().text_leading(text_leading);
+}
+
+#[pyfunction]
 fn background(r: u8, g: Option<u8>, b: Option<u8>, a: Option<u8>) {
     let draw = get_draw();
     let color = PColor::create_color(r, g, b, a);
@@ -336,6 +341,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(no_stroke, m)?)?;
     m.add_function(wrap_pyfunction!(stroke_weight, m)?)?;
     m.add_function(wrap_pyfunction!(font_size, m)?)?;
+    m.add_function(wrap_pyfunction!(text_leading, m)?)?;
     m.add_function(wrap_pyfunction!(background, m)?)?;
     m.add_function(wrap_pyfunction!(ellipse, m)?)?;
     m.add_function(wrap_pyfunction!(circle, m)?)?;
