@@ -104,6 +104,7 @@ pub struct AppState<'a> {
     pub height: u32,
     pub title: &'a str,
     drawing_style: DrawingStyle,
+    font_style: FontStyle,
     transform_matrix: Mat4,
     matrix_stack: Vec<Mat4>,
 
@@ -139,6 +140,7 @@ impl<'a> AppState<'a> {
             height: 800,
             title: "q5",
             drawing_style: DrawingStyle::new(),
+            font_style: FontStyle::new(),
             transform_matrix: Mat4::IDENTITY,
             matrix_stack,
             mouse_event_state: MouseEventState::new(0.0, 0.0),
@@ -218,6 +220,10 @@ impl<'a> AppState<'a> {
 
     pub fn get_stroke_weight(&self) -> f32 {
         self.drawing_style.stroke_weight
+    }
+
+    pub fn font_size(&mut self, font_size: u32) {
+        self.font_style.font_size = font_size;
     }
 }
 
@@ -385,5 +391,40 @@ impl<'a, T> PathStyle for Drawing<'a, T>
             },
             PColor::NoColor => self,
         }
+    }
+}
+
+pub struct FontStyle {
+    pub font_size: u32,
+    pub line_spacing: f32,
+    pub horizontal_align: TextAlign,
+    pub vertical_align: TextAlign,
+}
+
+pub enum TextAlign {
+    Start,
+    Middle,
+    End,
+}
+
+impl FontStyle {
+    pub fn new() -> FontStyle {
+        FontStyle {
+            font_size: 24,
+            line_spacing: 0.0,
+            horizontal_align: TextAlign::Middle,
+            vertical_align: TextAlign::Middle,
+        }
+    }
+}
+
+pub trait TextStyle {
+    fn text_style(self) -> Self;
+}
+
+impl<'a> TextStyle for Drawing<'a, Text> {
+    fn text_style(self) -> Self {
+        let state = instance();
+        self.font_size(state.font_style.font_size)
     }
 }

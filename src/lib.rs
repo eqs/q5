@@ -194,6 +194,11 @@ fn stroke_weight(w: f32) {
 }
 
 #[pyfunction]
+fn font_size(font_size: u32) {
+    instance().font_size(font_size);
+}
+
+#[pyfunction]
 fn background(r: u8, g: Option<u8>, b: Option<u8>, a: Option<u8>) {
     let draw = get_draw();
     let color = PColor::create_color(r, g, b, a);
@@ -287,6 +292,24 @@ fn polyline_list(points: &PyList) {
 }
 
 #[pyfunction]
+fn text(text: &str, x: f32, y: f32, w: Option<f32>, h: Option<f32>) {
+    let draw = get_draw();
+
+    match (w, h) {
+        (None, None) =>
+            draw.text(text)
+                .text_style()
+                .x_y(x, y),
+        (Some(w), Some(h)) =>
+            draw.text(text)
+                .text_style()
+                .x_y(x, y)
+                .w_h(w, h),
+        _ => panic!("Invalid arguments")
+    };
+}
+
+#[pyfunction]
 fn save_frame(file_path: &str) {
     get_app().main_window().capture_frame(file_path);
 }
@@ -312,6 +335,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(stroke, m)?)?;
     m.add_function(wrap_pyfunction!(no_stroke, m)?)?;
     m.add_function(wrap_pyfunction!(stroke_weight, m)?)?;
+    m.add_function(wrap_pyfunction!(font_size, m)?)?;
     m.add_function(wrap_pyfunction!(background, m)?)?;
     m.add_function(wrap_pyfunction!(ellipse, m)?)?;
     m.add_function(wrap_pyfunction!(circle, m)?)?;
@@ -320,6 +344,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(arrow, m)?)?;
     m.add_function(wrap_pyfunction!(polygon_list, m)?)?;
     m.add_function(wrap_pyfunction!(polyline_list, m)?)?;
+    m.add_function(wrap_pyfunction!(text, m)?)?;
     m.add_function(wrap_pyfunction!(save_frame, m)?)?;
 
     add_event_class(&m)?;
