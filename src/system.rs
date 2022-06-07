@@ -425,6 +425,12 @@ pub trait TextStyle {
 impl<'a> TextStyle for Drawing<'a, Text> {
     fn text_style(self) -> Self {
         let state = instance();
-        self.font_size(state.font_style.font_size)
+        let ctx = match state.drawing_style.fill_color {
+            PColor::Gray8(lum) => self.color(rgb8(lum, lum, lum)),
+            PColor::Rgb8(r, g, b) => self.color(rgb8(r, g, b)),
+            PColor::Rgba8(r, g, b, a) => self.color(rgba8(r, g, b, a)),
+            _ => self,
+        };
+        ctx.font_size(state.font_style.font_size)
     }
 }
