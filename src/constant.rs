@@ -1,7 +1,17 @@
 use pyo3::prelude::*;
 
+pub type Align = u32;
 pub type MouseButton = u32;
 pub type Key = u32;
+
+
+pub const LEFT: Align = 0 as Align;
+pub const RIGHT: Align = 1 as Align;
+pub const TOP: Align = 2 as Align;
+pub const BOTTOM: Align = 3 as Align;
+pub const CENTER: Align = 4 as Align;
+pub const MIDDLE: Align = 4 as Align;
+
 
 pub const MOUSE_LEFT: MouseButton = 0 as MouseButton;
 pub const MOUSE_RIGHT: MouseButton = 1 as MouseButton;
@@ -177,6 +187,13 @@ pub fn add_module_constants(m: &PyModule) -> PyResult<()> {
             m.add(stringify!($name), $name)
         };
     }
+
+    add_constant!(LEFT)?;
+    add_constant!(RIGHT)?;
+    add_constant!(TOP)?;
+    add_constant!(BOTTOM)?;
+    add_constant!(MIDDLE)?;
+    add_constant!(CENTER)?;
 
     add_constant!(MOUSE_LEFT)?;
     add_constant!(MOUSE_RIGHT)?;

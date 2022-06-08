@@ -10,6 +10,7 @@ use nannou::draw::primitive::polygon::*;
 use nannou::event::{Key, MouseButton};
 
 use crate::event::*;
+use crate::constant::*;
 
 static mut INSTANCE: *mut AppState = 0 as *mut AppState;
 static mut APP_INSTANCE: *mut App = 0 as *mut App;
@@ -229,6 +230,22 @@ impl<'a> AppState<'a> {
     pub fn text_leading(&mut self, text_leading: f32) {
         self.font_style.line_spacing = text_leading;
     }
+
+    pub fn text_align(&mut self, h_align: Align, v_align: Align) {
+        self.font_style.horizontal_align = match h_align {
+            LEFT => TextAlign::Start,
+            MIDDLE => TextAlign::Middle,
+            RIGHT => TextAlign::End,
+            _ => self.font_style.horizontal_align,
+        };
+
+        self.font_style.vertical_align = match v_align {
+            TOP => TextAlign::Start,
+            MIDDLE => TextAlign::Middle,
+            BOTTOM => TextAlign::End,
+            _ => self.font_style.vertical_align,
+        };
+    }
 }
 
 impl<'a> PythonCallback for AppState<'a> {
@@ -405,6 +422,7 @@ pub struct FontStyle {
     pub vertical_align: TextAlign,
 }
 
+#[derive(Debug, Copy, Clone)]
 pub enum TextAlign {
     Start,
     Middle,
@@ -435,6 +453,19 @@ impl<'a> TextStyle for Drawing<'a, Text> {
             PColor::Rgba8(r, g, b, a) => self.color(rgba8(r, g, b, a)),
             _ => self,
         };
+
+        let ctx = match state.font_style.vertical_align {
+            TextAlign::Start => ctx.align_text_top(),
+            TextAlign::Middle => ctx.align_text_middle_y(),
+            TextAlign::End => ctx.align_text_bottom(),
+        };
+
+        let ctx = match state.font_style.horizontal_align {
+            TextAlign::Start => ctx.left_justify(),
+            TextAlign::Middle => ctx.center_justify(),
+            TextAlign::End => ctx.right_justify(),
+        };
+
         ctx.font_size(state.font_style.font_size)
             .line_spacing(state.font_style.line_spacing)
     }
