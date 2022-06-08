@@ -223,6 +223,10 @@ impl<'a> AppState<'a> {
         self.drawing_style.stroke_weight
     }
 
+    pub fn text_font(&mut self, qfont: QFont) {
+        self.font_style.font = qfont.font;
+    }
+
     pub fn font_size(&mut self, font_size: u32) {
         self.font_style.font_size = font_size;
     }
@@ -420,6 +424,7 @@ impl<'a, T> PathStyle for Drawing<'a, T>
 }
 
 pub struct FontStyle {
+    pub font: nannou::text::Font,
     pub font_size: u32,
     pub line_spacing: f32,
     pub padding: f32,
@@ -437,6 +442,7 @@ pub enum TextAlign {
 impl FontStyle {
     pub fn new() -> FontStyle {
         FontStyle {
+            font: nannou::text::font::default_notosans(),
             font_size: 24,
             line_spacing: 0.0,
             padding: 0.0,
@@ -472,7 +478,32 @@ impl<'a> TextStyle for Drawing<'a, Text> {
             TextAlign::End => ctx.right_justify(),
         };
 
-        ctx.font_size(state.font_style.font_size)
+        ctx.font(state.font_style.font.clone())
+            .font_size(state.font_style.font_size)
             .line_spacing(state.font_style.line_spacing)
     }
+}
+
+#[pyclass]
+#[derive(Debug, Clone)]
+pub struct QFont {
+    pub font: nannou::text::Font,
+}
+
+#[pymethods]
+impl QFont {
+    #[new]
+    fn new(font_path: Option<&str>) -> Self {
+        let font = match font_path {
+            Some(path) => nannou::text::font::from_file(path)
+                .unwrap_or_else(|_| panic!("Failed to load font file.")),
+            None => nannou::text::font::default_notosans(),
+        };
+        QFont { font }
+    }
+}
+
+pub fn add_system_class(m: &PyModule) -> PyResult<()> {
+    m.add_class::<QFont>()?;
+    Ok(())
 }

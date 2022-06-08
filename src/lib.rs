@@ -9,6 +9,7 @@ mod numpy_lib;
 mod math_utils;
 mod constant;
 
+use crate::system::add_system_class;
 use crate::system::*;
 use crate::event::add_event_class;
 use crate::numpy_lib::add_numpy_functions;
@@ -195,6 +196,11 @@ fn stroke_weight(w: f32) {
 }
 
 #[pyfunction]
+fn text_font(font: QFont) {
+    instance().text_font(font);
+}
+
+#[pyfunction]
 fn font_size(font_size: u32) {
     instance().font_size(font_size);
 }
@@ -355,6 +361,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(stroke, m)?)?;
     m.add_function(wrap_pyfunction!(no_stroke, m)?)?;
     m.add_function(wrap_pyfunction!(stroke_weight, m)?)?;
+    m.add_function(wrap_pyfunction!(text_font, m)?)?;
     m.add_function(wrap_pyfunction!(font_size, m)?)?;
     m.add_function(wrap_pyfunction!(text_leading, m)?)?;
     m.add_function(wrap_pyfunction!(text_padding, m)?)?;
@@ -370,6 +377,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(text, m)?)?;
     m.add_function(wrap_pyfunction!(save_frame, m)?)?;
 
+    add_system_class(&m)?;
     add_event_class(&m)?;
     add_numpy_functions(&m)?;
     add_module_constants(&m)?;
