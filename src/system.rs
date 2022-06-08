@@ -105,7 +105,7 @@ pub struct AppState<'a> {
     pub height: u32,
     pub title: &'a str,
     drawing_style: DrawingStyle,
-    font_style: FontStyle,
+    pub font_style: FontStyle,
     transform_matrix: Mat4,
     matrix_stack: Vec<Mat4>,
 
@@ -229,6 +229,10 @@ impl<'a> AppState<'a> {
 
     pub fn text_leading(&mut self, text_leading: f32) {
         self.font_style.line_spacing = text_leading;
+    }
+
+    pub fn text_padding(&mut self, padding: f32) {
+        self.font_style.padding = padding;
     }
 
     pub fn text_align(&mut self, h_align: Align, v_align: Align) {
@@ -418,6 +422,7 @@ impl<'a, T> PathStyle for Drawing<'a, T>
 pub struct FontStyle {
     pub font_size: u32,
     pub line_spacing: f32,
+    pub padding: f32,
     pub horizontal_align: TextAlign,
     pub vertical_align: TextAlign,
 }
@@ -434,6 +439,7 @@ impl FontStyle {
         FontStyle {
             font_size: 24,
             line_spacing: 0.0,
+            padding: 0.0,
             horizontal_align: TextAlign::Middle,
             vertical_align: TextAlign::Middle,
         }

@@ -205,6 +205,11 @@ fn text_leading(text_leading: f32) {
 }
 
 #[pyfunction]
+fn text_padding(padding: f32) {
+    instance().text_padding(padding);
+}
+
+#[pyfunction]
 fn text_align(h_align: Align, v_align: Option<Align>) {
     let v_align = v_align.unwrap_or(LEFT);
     instance().text_align(h_align, v_align);
@@ -312,11 +317,14 @@ fn text(text: &str, x: f32, y: f32, w: Option<f32>, h: Option<f32>) {
             draw.text(text)
                 .text_style()
                 .x_y(x, y),
-        (Some(w), Some(h)) =>
+        (Some(w), Some(h)) => {
+            let rect = Rect::from_w_h(w, h)
+                .pad(instance().font_style.padding);
             draw.text(text)
                 .text_style()
                 .x_y(x, y)
-                .w_h(w, h),
+                .wh(rect.wh())
+        }
         _ => panic!("Invalid arguments")
     };
 }
@@ -349,6 +357,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(stroke_weight, m)?)?;
     m.add_function(wrap_pyfunction!(font_size, m)?)?;
     m.add_function(wrap_pyfunction!(text_leading, m)?)?;
+    m.add_function(wrap_pyfunction!(text_padding, m)?)?;
     m.add_function(wrap_pyfunction!(text_align, m)?)?;
     m.add_function(wrap_pyfunction!(background, m)?)?;
     m.add_function(wrap_pyfunction!(ellipse, m)?)?;
