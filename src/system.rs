@@ -10,6 +10,7 @@ use nannou::draw::primitive::polygon::*;
 use nannou::event::{Key, MouseButton};
 
 use crate::event::*;
+use crate::constant::*;
 
 static mut INSTANCE: *mut AppState = 0 as *mut AppState;
 static mut APP_INSTANCE: *mut App = 0 as *mut App;
@@ -104,6 +105,7 @@ pub struct AppState<'a> {
     pub height: u32,
     pub title: &'a str,
     drawing_style: DrawingStyle,
+    pub font_style: FontStyle,
     transform_matrix: Mat4,
     matrix_stack: Vec<Mat4>,
 
@@ -139,6 +141,7 @@ impl<'a> AppState<'a> {
             height: 800,
             title: "q5",
             drawing_style: DrawingStyle::new(),
+            font_style: FontStyle::new(),
             transform_matrix: Mat4::IDENTITY,
             matrix_stack,
             mouse_event_state: MouseEventState::new(0.0, 0.0),
@@ -218,6 +221,38 @@ impl<'a> AppState<'a> {
 
     pub fn get_stroke_weight(&self) -> f32 {
         self.drawing_style.stroke_weight
+    }
+
+    pub fn text_font(&mut self, qfont: QFont) {
+        self.font_style.font = qfont.font;
+    }
+
+    pub fn font_size(&mut self, font_size: u32) {
+        self.font_style.font_size = font_size;
+    }
+
+    pub fn text_leading(&mut self, text_leading: f32) {
+        self.font_style.line_spacing = text_leading;
+    }
+
+    pub fn text_padding(&mut self, padding: f32) {
+        self.font_style.padding = padding;
+    }
+
+    pub fn text_align(&mut self, h_align: Align, v_align: Align) {
+        self.font_style.horizontal_align = match h_align {
+            LEFT => TextAlign::Start,
+            MIDDLE => TextAlign::Middle,
+            RIGHT => TextAlign::End,
+            _ => self.font_style.horizontal_align,
+        };
+
+        self.font_style.vertical_align = match v_align {
+            TOP => TextAlign::Start,
+            MIDDLE => TextAlign::Middle,
+            BOTTOM => TextAlign::End,
+            _ => self.font_style.vertical_align,
+        };
     }
 }
 
@@ -386,4 +421,89 @@ impl<'a, T> PathStyle for Drawing<'a, T>
             PColor::NoColor => self,
         }
     }
+}
+
+pub struct FontStyle {
+    pub font: nannou::text::Font,
+    pub font_size: u32,
+    pub line_spacing: f32,
+    pub padding: f32,
+    pub horizontal_align: TextAlign,
+    pub vertical_align: TextAlign,
+}
+
+#[derive(Debug, Copy, Clone)]
+pub enum TextAlign {
+    Start,
+    Middle,
+    End,
+}
+
+impl FontStyle {
+    pub fn new() -> FontStyle {
+        FontStyle {
+            font: nannou::text::font::default_notosans(),
+            font_size: 24,
+            line_spacing: 0.0,
+            padding: 0.0,
+            horizontal_align: TextAlign::Middle,
+            vertical_align: TextAlign::Middle,
+        }
+    }
+}
+
+pub trait TextStyle {
+    fn text_style(self) -> Self;
+}
+
+impl<'a> TextStyle for Drawing<'a, Text> {
+    fn text_style(self) -> Self {
+        let state = instance();
+        let ctx = match state.drawing_style.fill_color {
+            PColor::Gray8(lum) => self.color(rgb8(lum, lum, lum)),
+            PColor::Rgb8(r, g, b) => self.color(rgb8(r, g, b)),
+            PColor::Rgba8(r, g, b, a) => self.color(rgba8(r, g, b, a)),
+            _ => self,
+        };
+
+        let ctx = match state.font_style.vertical_align {
+            TextAlign::Start => ctx.align_text_top(),
+            TextAlign::Middle => ctx.align_text_middle_y(),
+            TextAlign::End => ctx.align_text_bottom(),
+        };
+
+        let ctx = match state.font_style.horizontal_align {
+            TextAlign::Start => ctx.left_justify(),
+            TextAlign::Middle => ctx.center_justify(),
+            TextAlign::End => ctx.right_justify(),
+        };
+
+        ctx.font(state.font_style.font.clone())
+            .font_size(state.font_style.font_size)
+            .line_spacing(state.font_style.line_spacing)
+    }
+}
+
+#[pyclass]
+#[derive(Debug, Clone)]
+pub struct QFont {
+    pub font: nannou::text::Font,
+}
+
+#[pymethods]
+impl QFont {
+    #[new]
+    fn new(font_path: Option<&str>) -> Self {
+        let font = match font_path {
+            Some(path) => nannou::text::font::from_file(path)
+                .unwrap_or_else(|_| panic!("Failed to load font file.")),
+            None => nannou::text::font::default_notosans(),
+        };
+        QFont { font }
+    }
+}
+
+pub fn add_system_class(m: &PyModule) -> PyResult<()> {
+    m.add_class::<QFont>()?;
+    Ok(())
 }
