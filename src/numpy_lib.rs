@@ -1,6 +1,16 @@
 use pyo3::prelude::*;
 use numpy::*;
+use nannou::image;
+
 use crate::*;
+
+
+pub fn load_image_from_numpy(image: &PyArray<f64, Ix3>) -> image::DynamicImage {
+    let shape = image.shape();
+    image::DynamicImage::ImageRgba8(image::ImageBuffer::from_fn(shape[0] as u32, shape[1] as u32, |x, y| {
+        return image::Rgba([(x as f32 / 255.0) as u8, (y as f32 / 255.0) as u8, 0, std::u8::MAX])
+    }))
+}
 
 #[pyfunction]
 fn polygon_ndarray(points: &PyArray<f64, Ix2>) {

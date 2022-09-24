@@ -336,6 +336,13 @@ fn text(text: &str, x: f32, y: f32, w: Option<f32>, h: Option<f32>) {
 }
 
 #[pyfunction]
+fn image(img: QImage, x: f32, y: f32) {
+    let draw = get_draw();
+    draw.texture(&img.texture);
+}
+
+
+#[pyfunction]
 fn save_frame(file_path: &str) {
     get_app().main_window().capture_frame(file_path);
 }
@@ -375,6 +382,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(polygon_list, m)?)?;
     m.add_function(wrap_pyfunction!(polyline_list, m)?)?;
     m.add_function(wrap_pyfunction!(text, m)?)?;
+    m.add_function(wrap_pyfunction!(image, m)?)?;
     m.add_function(wrap_pyfunction!(save_frame, m)?)?;
 
     add_system_class(&m)?;
