@@ -521,7 +521,7 @@ impl QImage {
         let texture = nannou::wgpu::Texture::load_from_image(
             window.device(),
             window.queue(),
-            nannou::wgpu::TextureUsages::COPY_DST,
+            nannou::wgpu::TextureUsages::COPY_DST | nannou::wgpu::TextureUsages::TEXTURE_BINDING,
             &imgbuf
         );
 
