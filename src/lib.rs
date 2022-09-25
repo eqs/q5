@@ -36,7 +36,7 @@ fn run<'a>(
         py_key_released: &'a PyAny
     ) {
     set_instance(AppState::new(
-            py, py_setup, py_update, py_draw, 
+            py, py_setup, py_update, py_draw,
             py_mouse_pressed,
             py_mouse_released,
             py_mouse_moved,
@@ -336,9 +336,18 @@ fn text(text: &str, x: f32, y: f32, w: Option<f32>, h: Option<f32>) {
 }
 
 #[pyfunction]
-fn image(img: QImage, x: f32, y: f32) {
+fn image(img: QImage, x: f32, y: f32, w: Option<f32>, h: Option<f32>) {
     let draw = get_draw();
-    draw.texture(&img.texture);
+    match (w, h) {
+        (None, None) =>
+            draw.texture(&img.texture)
+                .x_y(x, y),
+        (Some(w), Some(h)) =>
+            draw.texture(&img.texture)
+                .x_y(x, y)
+                .w_h(w, h),
+        _ => panic!("Invalid arguments")
+    };
 }
 
 
