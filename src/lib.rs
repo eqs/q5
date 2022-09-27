@@ -36,7 +36,7 @@ fn run<'a>(
         py_key_released: &'a PyAny
     ) {
     set_instance(AppState::new(
-            py, py_setup, py_update, py_draw, 
+            py, py_setup, py_update, py_draw,
             py_mouse_pressed,
             py_mouse_released,
             py_mouse_moved,
@@ -336,6 +336,22 @@ fn text(text: &str, x: f32, y: f32, w: Option<f32>, h: Option<f32>) {
 }
 
 #[pyfunction]
+fn image(img: QImage, x: f32, y: f32, w: Option<f32>, h: Option<f32>) {
+    let draw = get_draw();
+    match (w, h) {
+        (None, None) =>
+            draw.texture(&img.texture)
+                .x_y(x, y),
+        (Some(w), Some(h)) =>
+            draw.texture(&img.texture)
+                .x_y(x, y)
+                .w_h(w, h),
+        _ => panic!("Invalid arguments")
+    };
+}
+
+
+#[pyfunction]
 fn save_frame(file_path: &str) {
     get_app().main_window().capture_frame(file_path);
 }
@@ -375,6 +391,7 @@ fn engine(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(polygon_list, m)?)?;
     m.add_function(wrap_pyfunction!(polyline_list, m)?)?;
     m.add_function(wrap_pyfunction!(text, m)?)?;
+    m.add_function(wrap_pyfunction!(image, m)?)?;
     m.add_function(wrap_pyfunction!(save_frame, m)?)?;
 
     add_system_class(&m)?;
