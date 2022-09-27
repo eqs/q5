@@ -1,16 +1,17 @@
+use std::mem::transmute;
 use nannou::app::App;
 use nannou::draw::{Draw, Drawing};
-use std::mem::transmute;
-use pyo3::prelude::*;
-
 use nannou::prelude::*;
 use nannou::draw::properties::*;
 use nannou::draw::primitive::*;
 use nannou::draw::primitive::polygon::*;
 use nannou::event::{Key, MouseButton};
+use pyo3::prelude::*;
+use numpy::*;
 
 use crate::event::*;
 use crate::constant::*;
+use crate::numpy_lib::*;
 
 static mut INSTANCE: *mut AppState = 0 as *mut AppState;
 static mut APP_INSTANCE: *mut App = 0 as *mut App;
@@ -503,7 +504,33 @@ impl QFont {
     }
 }
 
+#[pyclass]
+#[derive(Debug, Clone)]
+pub struct QImage {
+    pub texture: nannou::wgpu::Texture,
+    pub imgbuf: nannou::image::DynamicImage,
+}
+
+#[pymethods]
+impl QImage {
+    #[new]
+    fn new(image: &PyArray<f64, Ix3>) -> Self {
+        let window = get_app().main_window();
+        let shape = image.shape();
+        let imgbuf = load_image_from_numpy(image);
+        let texture = nannou::wgpu::Texture::load_from_image(
+            window.device(),
+            window.queue(),
+            nannou::wgpu::TextureUsages::COPY_DST | nannou::wgpu::TextureUsages::TEXTURE_BINDING,
+            &imgbuf
+        );
+
+        QImage { texture, imgbuf }
+    }
+}
+
 pub fn add_system_class(m: &PyModule) -> PyResult<()> {
     m.add_class::<QFont>()?;
+    m.add_class::<QImage>()?;
     Ok(())
 }
