@@ -515,8 +515,12 @@ pub struct QImage {
 impl QImage {
     #[new]
     fn new(image: &PyArray<f64, Ix3>) -> Self {
+        Self::from_ndarray(image)
+    }
+
+    #[staticmethod]
+    fn from_ndarray(image: &PyArray<f64, Ix3>) -> Self {
         let window = get_app().main_window();
-        let shape = image.shape();
         let imgbuf = load_image_from_numpy(image);
         let texture = nannou::wgpu::Texture::load_from_image(
             window.device(),
@@ -527,6 +531,7 @@ impl QImage {
 
         QImage { texture, imgbuf }
     }
+
 }
 
 pub fn add_system_class(m: &PyModule) -> PyResult<()> {
