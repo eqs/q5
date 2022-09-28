@@ -520,8 +520,9 @@ impl QImage {
 
     #[staticmethod]
     fn from_ndarray(image: &PyArray<f64, Ix3>) -> Self {
-        let window = get_app().main_window();
         let imgbuf = load_image_from_numpy(image);
+
+        let window = get_app().main_window();
         let texture = nannou::wgpu::Texture::load_from_image(
             window.device(),
             window.queue(),
@@ -532,6 +533,21 @@ impl QImage {
         QImage { texture, imgbuf }
     }
 
+    #[staticmethod]
+    fn from_path(path: &str) -> Self {
+        let rgb = nannou::image::open(path).unwrap().into_rgb8();
+        let imgbuf = nannou::image::DynamicImage::ImageRgb8(rgb);
+
+        let window = get_app().main_window();
+        let texture = nannou::wgpu::Texture::load_from_image(
+            window.device(),
+            window.queue(),
+            nannou::wgpu::TextureUsages::COPY_DST | nannou::wgpu::TextureUsages::TEXTURE_BINDING,
+            &imgbuf
+        );
+
+        QImage { texture, imgbuf }
+    }
 }
 
 pub fn add_system_class(m: &PyModule) -> PyResult<()> {
