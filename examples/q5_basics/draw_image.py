@@ -14,7 +14,7 @@ class App(q5.BaseApp):
         img[ii, jj, 1] = jj / 480 * 255
         img[ii, jj, 2] = 0.0
 
-        self.img = q5.QImage(img)
+        self.img = q5.QImage.from_ndarray(img)
 
     def update(self):
         pass
